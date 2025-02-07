@@ -1,23 +1,21 @@
 import React from 'react';
-import {BrowserRouter, Routes, Route} from 'react-router-dom';
-import Todo from './Todo';
-import 'bootstrap/dist/css/bootstrap.min.css'
-// import Edit from './Edit';
+import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Home from './Components/Home';
+import Login from './Components/Login';
+import Todo from './Components/Todo';
 
 
 function App() {
-
   return (
-      <BrowserRouter>
+      <Router>
         <Routes>
-          <Route path='/' element={<Todo />} />
-          {/* <Route path='/create' element={<Create />} /> */}
-          {/* <Route path='/read/:id' element={<Read />} /> */}
-          {/* <Route path='/edit/:id' element={<Edit />} /> */}
+          <Route path='/' element={<Login />} />
+          <Route path='/home' element={<Home />} />
+          <Route path='/todo' element={<Todo />} />
         </Routes>
-      
-      </BrowserRouter>
-  )
+      </Router>
+  );
 }
 
 export default App

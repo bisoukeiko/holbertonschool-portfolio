@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
-import { Link } from 'react-router-dom';
 
 
 function Todo() {
@@ -13,7 +12,7 @@ function Todo() {
     const [isEdit, setIsEdit] = useState(false);
 
     useEffect(()=> {
-        axios.get('http://localhost:5000/')
+        axios.get('http://localhost:5000/todoSelect')
         .then(res => setTodos(res.data))
         .catch(err => console.log(err));
     }, [])
@@ -24,7 +23,7 @@ function Todo() {
         if (!values.task) {
             return;
         } else {
-            axios.post('http://localhost:5000/todoadd', values)
+            axios.post('http://localhost:5000/todoAdd', values)
             .then(res => {
                 console.log(res);
                 setTodos(res.data);
@@ -53,7 +52,7 @@ function Todo() {
         event.preventDefault();
         const updatedValues = { ...values };
         console.log(updatedValues);
-        axios.put(`http://localhost:5000/todoupdate/${updateId}`, updatedValues)
+        axios.put(`http://localhost:5000/todoUpdate/${updateId}`, updatedValues)
         .then(res => {
             console.log(res);
             setTodos(res.data);
@@ -70,7 +69,7 @@ function Todo() {
         event.preventDefault();
         const updatedValues = { fg_done: currentFgDone ? 0 : 1 };
     
-        axios.put('http://localhost:5000/todoupdatefg/'+id, updatedValues)
+        axios.put('http://localhost:5000/todoUpdatefg/'+id, updatedValues)
         .then(res => {
             console.log(res);
             setTodos(res.data);
@@ -81,7 +80,7 @@ function Todo() {
 
     // 削除ボタン押下
     const handleDelete = (id) => {
-        axios.delete('http://localhost:5000/tododelete/'+id)
+        axios.delete('http://localhost:5000/todoDelete/'+id)
         .then(res => {
             setTodos(res.data);
             setTask('');

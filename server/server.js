@@ -23,14 +23,14 @@ db.connect((err) => {
     console.log("Failed to connect database");
   }
 })
-app.get('/', (req, res) => {
+
+app.get('/todoSelect', (req, res) => {
   const sql = `SELECT id_task,
                       id_party,
                       task,
-                      fg_done,
-                      created_at,
-                      updated_at
-                 FROM TB_TODO;`
+                      fg_done
+                 FROM TB_TODO
+             ORDER BY update_at desc;`
 db.query(sql, (err, result)=> {
     if(err) {
       console.error("Database Error:", err);
@@ -41,7 +41,7 @@ db.query(sql, (err, result)=> {
 });
 
 // Todo Add 
-app.post('/todoadd', (req, res) => {
+app.post('/todoAdd', (req, res) => {
   const sql = 'INSERT INTO TB_TODO (id_task, id_party, task, fg_done) VALUES (?, ?, ?, ?);';
   // console.log(res.body);
   const values = [
@@ -59,10 +59,9 @@ app.post('/todoadd', (req, res) => {
       const sql = `SELECT id_task,
                           id_party,
                           task,
-                          fg_done,
-                          created_at,
-                          updated_at
-                     FROM TB_TODO;`
+                          fg_done
+                     FROM TB_TODO
+                 ORDER BY update_at desc;`
       db.query(sql, (err, result) => {
         return res.status(201).json(result);
       })
@@ -85,7 +84,7 @@ app.post('/todoadd', (req, res) => {
 // });
 
 // Todo Update the task
-app.put('/todoupdate/:id', (req, res) => {
+app.put('/todoUpdate/:id', (req, res) => {
   const sql = 'UPDATE TB_TODO SET task=? WHERE id_task=?';
   const id = req.params.id;
   db.query(sql, [req.body.task, id], (err, result) => {
@@ -96,10 +95,9 @@ app.put('/todoupdate/:id', (req, res) => {
       const sql = `SELECT id_task,
                           id_party,
                           task,
-                          fg_done,
-                          created_at,
-                          updated_at
-                     FROM TB_TODO;`
+                          fg_done
+                     FROM TB_TODO
+             ORDER BY update_at desc;`
       db.query(sql, (err, result) => {
         return res.status(201).json(result);
       });
@@ -108,7 +106,7 @@ app.put('/todoupdate/:id', (req, res) => {
 });
 
 // Todo Update the flag done
-app.put('/todoupdatefg/:id', (req, res) => {
+app.put('/todoUpdatefg/:id', (req, res) => {
   const sql = 'UPDATE TB_TODO SET fg_done=? WHERE id_task=?';
   const id = req.params.id;
 
@@ -123,10 +121,9 @@ app.put('/todoupdatefg/:id', (req, res) => {
       const sql = `SELECT id_task,
                           id_party,
                           task,
-                          fg_done,
-                          created_at,
-                          updated_at
-                     FROM TB_TODO;`
+                          fg_done
+                     FROM TB_TODO
+             ORDER BY update_at desc;`
       db.query(sql, (err, result) => {
         return res.status(201).json(result);
       });
@@ -135,7 +132,7 @@ app.put('/todoupdatefg/:id', (req, res) => {
 });
 
 // Todo delete
-app.delete('/tododelete/:id', (req, res) => {
+app.delete('/todoDelete/:id', (req, res) => {
   const sql = 'DELETE FROM TB_TODO WHERE id_task = ?';
   const id = req.params.id;
   db.query(sql, [id], (err, result) => {
@@ -146,16 +143,81 @@ app.delete('/tododelete/:id', (req, res) => {
       const sql = `SELECT id_task,
                           id_party,
                           task,
-                          fg_done,
-                          created_at,
-                          updated_at
-                     FROM TB_TODO;`
+                          fg_done
+                     FROM TB_TODO
+                 ORDER BY update_at desc;`
       db.query(sql, (err, result) => {
         return res.status(201).json(result);
       });
     }
   }); 
 });
+
+
+// user select
+app.get('/userSelect', (req, res) => {
+  const { sub }  = req.query;
+  const sql = `SELECT id_user
+                 FROM TB_USER
+                WHERE id_google = ?;`
+
+  db.query(sql, [sub], (err, result)=> {
+    if(err) {
+      console.error("Database Error:", err);
+      return res.status(500).json({Message: 'Error inside server', Error: err});
+    }
+    return res.json(result);
+  })
+});
+
+// user Add
+app.post('/userInsert', (req, res) => {
+  const sql = `INSERT INTO TB_USER
+                     (id_user,
+                      id_google,
+                      user_name,
+                      user_email)
+              VALUES (?, ?, ?, ?);`;
+
+  const values = [uuidv4(),
+                  req.body.gSub,
+                  req.body.gName,
+                  req.body.gEmail
+                 ];
+
+  db.query(sql, values, (err, result) => {
+    if(err) {
+      console.error('Error insertion user:', err);
+      return res.status(500).json({ error: 'Database error' });
+    } else {
+      return res.status(201).json({ message: 'User inserted successfully' });
+    }
+  });
+});
+
+// user Update
+// app.post('/userUpdate', (req, res) => {
+//   const sql = `UPDATE TB_USER SET
+//                       user_name = ?,
+//                       user_email = ?,
+//                       user_phone = ?
+//                 WHERE id_user = ?;`;
+
+//   // const values = [uuidv4(),
+//   //                 req.body.gSub,
+//   //                 req.body.gName,
+//   //                 req.body.gemail
+//   //                ];
+
+//   db.query(sql, values, (err, result) => {
+//     if(err) {
+//       console.error('Error update user:', err);
+//       return res.status(500).json({ error: 'Database error' });
+//     } else {
+//       return res.status(201).json({ message: 'User updated successfully' });
+//     }
+//   });
+// });
 
 
 app.listen(PORT, () => {

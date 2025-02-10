@@ -59,7 +59,7 @@ function User() {
 
   return (
     <div className='d-flex vh-100 justify-content-center align-items-center'>
-      <div className='w-25 bg-white rounded p-3'>
+      <div className='w-25 bg-white rounded p-3 '>
           <form onSubmit={isEdit ? handleUpdate : handleEdit}>
               <h2>User Info</h2>
               <div className='mb-2'>
@@ -89,7 +89,7 @@ function User() {
                     <p className='fs-5'>{userInfo.userPhone}</p>
                   )}
               </div>
-              <button className='btn btn-success '>
+              <button className='btn btn-outline-info '>
                 {isEdit ? 'Update' : 'Edit'}
               </button>
           </form>

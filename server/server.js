@@ -155,18 +155,21 @@ app.delete('/todoDelete/:id', (req, res) => {
 
 
 // user select
-app.get('/userSelect', (req, res) => {
+app.get('/userSelect/', (req, res) => {
   const { sub }  = req.query;
-  const sql = `SELECT id_user
+  const sql = `SELECT id_user,
+                      user_name,
+                      user_email,
+                      user_phone
                  FROM TB_USER
                 WHERE id_google = ?;`
 
   db.query(sql, [sub], (err, result)=> {
     if(err) {
       console.error("Database Error:", err);
-      return res.status(500).json({Message: 'Error inside server', Error: err});
+      return res.status(500).json({Message: 'Error select user', Error: err});
     }
-    return res.json(result);
+    return res.status(200).json(result);
   })
 });
 
@@ -196,28 +199,28 @@ app.post('/userInsert', (req, res) => {
 });
 
 // user Update
-// app.post('/userUpdate', (req, res) => {
-//   const sql = `UPDATE TB_USER SET
-//                       user_name = ?,
-//                       user_email = ?,
-//                       user_phone = ?
-//                 WHERE id_user = ?;`;
+app.put('/userUpdate', (req, res) => {
+  const sql = `UPDATE TB_USER SET
+                      user_name = ?,
+                      user_email = ?,
+                      user_phone = ?
+                WHERE id_user = ?;`;
 
-//   // const values = [uuidv4(),
-//   //                 req.body.gSub,
-//   //                 req.body.gName,
-//   //                 req.body.gemail
-//   //                ];
+  const values = [req.body.userName,
+                  req.body.userEmail,
+                  req.body.userPhone,
+                  req.body.userId
+                 ];
 
-//   db.query(sql, values, (err, result) => {
-//     if(err) {
-//       console.error('Error update user:', err);
-//       return res.status(500).json({ error: 'Database error' });
-//     } else {
-//       return res.status(201).json({ message: 'User updated successfully' });
-//     }
-//   });
-// });
+  db.query(sql, values, (err, result) => {
+    if(err) {
+      console.error('Error update user:', err);
+      return res.status(500).json({ error: 'Database error' });
+    } else {
+      return res.status(201).json({ message: 'User updated successfully' });
+    }
+  });
+});
 
 
 app.listen(PORT, () => {

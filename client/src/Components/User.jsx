@@ -1,23 +1,25 @@
 import React, { useEffect, useState } from "react";
+import { useUser } from './UserContext';
 import axios from 'axios';
 
-function User({ idGoogle}) {
+function User() {
+  const { userId } = useUser();
 
   const [isEdit, setIsEdit] = useState(false);
   const [userInfo, setUserInfo] = useState({
-    userId: '',
+    idUser: '',
     userName: '',
     userEmail: '',
     userPhone: ''
   });
 
   useEffect(()=>{
-    if (idGoogle) {
-      axios.get(`http://localhost:5000/userSelect/`,  {params: { sub: idGoogle }})
+    if (userId) {
+      axios.get(`http://localhost:5000/userSelectIdUser/`,  {params: { userId: userId }})
       .then(res => {
           console.log(res.data[0]);
           setUserInfo({
-            userId: res.data[0].id_user,
+            idUser: res.data[0].id_user,
             userName: res.data[0].user_name,
             userEmail: res.data[0].user_email,
             userPhone: res.data[0].user_phone
@@ -26,13 +28,13 @@ function User({ idGoogle}) {
       .catch(err => console.log(err))
     } else {
       setUserInfo({
-        userId: '',
+        idUser: '',
         userName: '',
         userEmail: '',
         userPhone: ''    
       });
     }
-  }, [idGoogle]);
+  }, [userId]);
 
   const handleEdit = (e) => {
     e.preventDefault();

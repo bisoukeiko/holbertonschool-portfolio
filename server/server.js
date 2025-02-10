@@ -154,17 +154,33 @@ app.delete('/todoDelete/:id', (req, res) => {
 });
 
 
-// user select
+// user select with id_google
 app.get('/userSelect/', (req, res) => {
   const { sub }  = req.query;
+  const sql = `SELECT id_user
+                 FROM TB_USER
+                WHERE id_google = ?;`
+
+  db.query(sql, [sub], (err, result)=> {
+    if(err) {
+      console.error("Database Error:", err);
+      return res.status(500).json({Message: 'Error select user', Error: err});
+    }
+    return res.status(200).json(result);
+  })
+});
+
+// user select with id_user
+app.get('/userSelectIdUser/', (req, res) => {
+  const { userId }  = req.query;
   const sql = `SELECT id_user,
                       user_name,
                       user_email,
                       user_phone
                  FROM TB_USER
-                WHERE id_google = ?;`
+                WHERE id_user = ?;`
 
-  db.query(sql, [sub], (err, result)=> {
+  db.query(sql, [userId], (err, result)=> {
     if(err) {
       console.error("Database Error:", err);
       return res.status(500).json({Message: 'Error select user', Error: err});

@@ -14,26 +14,26 @@ function Login() {
   async function handleLoginSuccess(credentialResponse) {
     try {
       const googleInfo = jwtDecode(credentialResponse.credential);
-      console.log(googleInfo);
+      // console.log(googleInfo);
 
       setIsLoggedIn(true);
 
       // ユーザーがDBに存在するか確認
       // check User exist in detabase
       const userExist = await axios.get('http://localhost:5000/userSelect', {params: { sub: googleInfo.sub }});
-      console.log(userExist);
-      if (userExist.data.length > 0) {
-        console.log('user exist');
-        return;
-      } else {
+      // console.log(userExist);
+      if (userExist.data.length === 0) {
         await axios.post('http://localhost:5000/userInsert', {
           gSub: googleInfo.sub,
           gName: googleInfo.name,
           gEmail: googleInfo.email
-        })
+        });
       }
+      // } else {
+      //   await axios.put(`http://localhost:5000/userUpdateLogin`, userExist.data[0]);
+      // }
 
-      navigate('/home');
+      navigate('/home', {state: {idGoogle: googleInfo.sub}});
     } catch (error) {
       console.error('Error login process:', error);
     }
@@ -43,11 +43,12 @@ function Login() {
     googleLogout();
     setIsLoggedIn(false);
     console.log('logout');
+    navigate('/home', {state: {idGoogle: ''}});
   }
 
   return (
     <div className="d-flex justify-content-center">
-      {isLoggedIn ? (
+    {isLoggedIn ? (
         <button className='btn btn-danger' onClick={handleLogout}>
           Logout
         </button>

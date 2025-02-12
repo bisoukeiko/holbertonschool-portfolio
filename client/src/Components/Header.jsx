@@ -20,16 +20,16 @@ function Header() {
 
       // ユーザーがDBに存在するか確認
       // check User exist in detabase
-      let userExist = await axios.get('http://localhost:5000/userSelect', {params: { sub: googleInfo.sub }});
+      let userExist = await axios.get('http://localhost:5000/user/select', {params: { sub: googleInfo.sub }});
 
       if (userExist.data.length === 0) {
-        await axios.post('http://localhost:5000/userInsert', {
+        await axios.post('http://localhost:5000/user/insert', {
           gSub: googleInfo.sub,
           gName: googleInfo.name,
           gEmail: googleInfo.email
         });
 
-        userExist = await axios.get('http://localhost:5000/userSelect', {params: { sub: googleInfo.sub }});
+        userExist = await axios.get('http://localhost:5000/user/select', {params: { sub: googleInfo.sub }});
       }
 
       login(userExist.data[0].id_user);  // コンテキストにユーザーIDを保存
@@ -54,12 +54,14 @@ function Header() {
     <header>
       <nav>
         <Link to="/user">User</Link> | <Link to="/todo">Todo</Link> |
+        <div className="d-flex justify-content-end">
         {userId ? (
-            <button className='btn btn-danger' onClick={handleLogout}>
+            <button className='btn btn-primary' onClick={handleLogout}>
               Logout
             </button>
         ) : (
-            <div className="w-auto">
+
+            <div style={{ width: "250px" }}>
               <GoogleLogin
                 onSuccess={handleLoginSuccess}
                 onError={() => {
@@ -67,7 +69,9 @@ function Header() {
                 }}
               />
             </div>
+
         )}
+        </div>
       </nav>
     </header>
   );

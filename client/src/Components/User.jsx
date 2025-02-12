@@ -15,9 +15,9 @@ function User() {
 
   useEffect(()=>{
     if (userId) {
-      axios.get(`http://localhost:5000/userSelectIdUser/`,  {params: { userId: userId }})
+      axios.get(`http://localhost:5000/user/selectById`,  {params: { userId: userId }})
       .then(res => {
-          console.log(res.data[0]);
+          // console.log(res.data[0]);
           setUserInfo({
             idUser: res.data[0].id_user,
             userName: res.data[0].user_name,
@@ -46,7 +46,7 @@ function User() {
     e.preventDefault();
 
     console.log("Updating user:", userInfo);
-    axios.put(`http://localhost:5000/userUpdate`, userInfo)
+    axios.put(`http://localhost:5000/user/update`, userInfo)
     .then((res) => {
       console.log("User updated successfully:", res.data);
       alert("User updated successfully!");

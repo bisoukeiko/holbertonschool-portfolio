@@ -36,13 +36,11 @@ function Todo() {
 
     // Editボタン押下
     const [updateId, setUpdateID] = useState(null);
-    const [updatedTask, setUpdatedTask] = useState('');
 
     const handleEdit = (event, id, task) => {
         event.preventDefault();
         setIsEdit(true);
         setTask(task);
-        setUpdatedTask(task);
         setUpdateID(id);
 
     }
@@ -127,7 +125,7 @@ function Todo() {
                                 </td>
                                 <td className={`${tbTodo.fg_done ? 'text-decoration-line-through' : ''}`}>{tbTodo.task}</td>
                                 <td>
-                                    <button onClick={ (event) => handleEdit(event, tbTodo.id_task, tbTodo.task)} className='btn btn-sm btn-outline-info mx-2'>Edit</button>
+                                    <button onClick={ (event) => handleEdit(event, tbTodo.id_task, tbTodo.task)} className='btn btn-sm btn-outline-primary mx-2'>Edit</button>
                                     <button onClick={ () => handleDelete(tbTodo.id_task)} className='btn btn-sm btn-outline-danger'>Delete</button>
                                 </td>
                             </tr>

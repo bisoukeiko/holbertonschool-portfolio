@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useUser } from './UserContext';
 import User from "./User";
+import Child from "./Child";
 import Todo from "./Todo";
 
 function Home() {
@@ -16,6 +17,7 @@ function Home() {
       )}
 
       <User />
+      <Child />
       {/* <Todo /> */}
     </div>
   )

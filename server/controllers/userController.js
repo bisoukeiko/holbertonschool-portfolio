@@ -47,7 +47,7 @@ export const insertUser = (req, res) => {
                       user_email)
               VALUES (?, ?, ?, ?);`;
 
-  const values = [uuidv4(),
+  const values = [uuid4(),
                   req.body.gSub,
                   req.body.gName,
                   req.body.gEmail

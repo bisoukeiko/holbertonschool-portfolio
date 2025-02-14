@@ -1,5 +1,5 @@
 import db from '../db.js';
-import { v4 as uuid4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 
 export const getTodos = (req, res) => {
@@ -39,7 +39,7 @@ export const addTodo = (req, res) => {
       console.error('Error insertion todo:', err);
       return res.status(500).json({ error: 'Database error' });
     } else {
-      getTodo(req, res);
+      getTodos(req, res);
     }
   });
 };
@@ -53,7 +53,7 @@ export const updateTodo = (req, res) => {
         console.error("Database Error:", err);
         return res.status(500).json({Message: 'Error inside server', Error: err});
       } else {
-        getTodo(req, res);
+        getTodos(req, res);
       }
     });
 };
@@ -71,7 +71,7 @@ export const updateTodoFlag = (req, res) => {
         console.error("Database Error:", err);
         return res.status(500).json({Message: 'Error inside server', Error: err});
       } else {
-        getTodo(req, res);
+        getTodos(req, res);
       }
     });
 };
@@ -85,9 +85,7 @@ export const deleteTodo = (req, res) => {
         console.error("Database Error:", err);
         return res.json({Message: 'Error inside server', Error: err});
       } else {
-        getTodo(req, res);
+        getTodos(req, res);
       }
     }); 
 };
-  
-  

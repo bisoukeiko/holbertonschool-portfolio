@@ -51,26 +51,46 @@ function Header() {
   }
 
   return (
-    <header>
-      <nav>
-        <Link to="/user">User</Link> | <Link to="/todo">Todo</Link> |
-        <div className="d-flex justify-content-end">
-        {userId ? (
-            <button className='btn btn-primary' onClick={handleLogout}>
-              Logout
-            </button>
-        ) : (
+    <header className="bg-white shadow-sm">
+      <h1 className='fw-semibold'>HAPPY CANDLES</h1>
+      <nav className="container d-flex justify-content-between align-items-center py-3">
+        {/* ナビゲーションメニュー */}
+        <ul className="nav">
+          <li className="nav-item">
+            <Link to="/" className="nav-link text-dark fw-semibold">
+              Home
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link to="/party" className="nav-link text-dark fw-semibold">
+              Party
+            </Link>
+          </li>
+          {/* <li className="nav-item">
+            <a className="nav-link text-dark fw-semibold" href="#">
+              Link
+            </a>
+          </li> */}
+        </ul>
 
-            <div style={{ width: "250px" }}>
+        {/* Googleログイン or ログアウト */}
+        <div>
+          {userId ? (
+            <span
+              className="text-danger fw-bold cursor-pointer"
+              style={{ cursor: "pointer" }}
+              onClick={handleLogout}
+            >
+              Logout
+            </span>
+          ) : (
+            <div style={{ width: "200px" }}>
               <GoogleLogin
                 onSuccess={handleLoginSuccess}
-                onError={() => {
-                  console.log('Login Failed');
-                }}
+                onError={() => console.log('Login Failed')}
               />
             </div>
-
-        )}
+          )}
         </div>
       </nav>
     </header>

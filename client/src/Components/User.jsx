@@ -58,10 +58,9 @@ function User() {
 
 
   return (
-    <div className='d-flex vh-100 flex-column align-items-center'>
-      <h2>User Info</h2>
-      <div className='w-25 bg-white rounded p-3 '>
-          <form onSubmit={isEdit ? handleUpdate : handleEdit}>
+    <div className='d-flex vh-100 flex-column align-items-center mt-5'>
+      <div className='w-100 bg-white rounded p-3 '>
+          <form>
 
               <div className='card d-flex flex-column h-100'>
                 <div className='card-header'>
@@ -75,7 +74,7 @@ function User() {
                 </div>
                 <div className='card-body flex-grow-1'>
                   <div className='mb-1'>
-                      <label htmlFor='user'>e-mail:</label>
+                      <label htmlFor='userEmail'>e-mail:</label>
                       {isEdit ? (
                         <input id='userEmail' type='text' placeholder='Enter e-mail' className='form-control fs-5' value={userInfo.userEmail}
                         onChange={e => setUserInfo({...userInfo, userEmail: e.target.value})}/>
@@ -84,7 +83,7 @@ function User() {
                       )}
                   </div>
                   <div className='mb-1'>
-                      <label htmlFor='user'>phone:</label>
+                      <label htmlFor='userPhone'>phone:</label>
                       {isEdit ? (
                         <input id='userPhone' type='text' placeholder='Enter phone number' className='form-control fs-5' value={userInfo.userPhone}
                         onChange={e => setUserInfo({...userInfo, userPhone: e.target.value})}/>
@@ -93,9 +92,9 @@ function User() {
                       )}
                   </div>
                   <div className='d-flex justify-content-end'>
-                    <button className='btn btn-outline-primary btn-sm'>
+                    <span className='text-primary me-2' style={{ cursor: 'pointer' }}  onClick={isEdit ? handleUpdate : handleEdit}>
                       {isEdit ? 'Update' : 'Edit'}
-                    </button>
+                    </span>
                   </div>
                 </div>
               </div>

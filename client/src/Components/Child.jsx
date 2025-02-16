@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useUser } from './UserContext';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Child() {
     const { userId } = useUser();
+    const navigate = useNavigate();
 
     const [isAdd, setIsAdd] = useState(false);
     const [childList, setChildList] = useState([]);
@@ -11,17 +13,18 @@ function Child() {
         childId: '',
         id_parent: userId,
         child_name: '',
-        child_birthday: ''
+        child_birthday: '',
+        child_parties: []
     });
 
 
     useEffect(() => {
         if (userId) {
           setValues(prevValues => ({ ...prevValues, id_parent: userId }));
-          axios.get(`http://localhost:5000/child/selectByIdUser/`, {params: { userId: userId }})
+          axios.get(`http://localhost:5000/child/selectChildParty/`, {params: { userId: userId }})
             .then(res => {
               if (res.data.length !== 0) {
-                console.log(res.data[0]);
+                // console.log(res.data);
                 const childData = res.data.map(child => ({
                   ...child, isEdit: false
                 }));
@@ -74,7 +77,8 @@ function Child() {
               childId: '',
               id_parent: userId,
               child_name: '',
-              child_birthday: ''      
+              child_birthday: '',
+              child_parties: []      
             });
             setIsAdd(false);
           })
@@ -102,14 +106,14 @@ function Child() {
           });
     })
       .catch(err => console.log(err));
-    };
+   };
 
 
     const handleDelete = (childId) => {
       axios.delete(`http://localhost:5000/child/delete/${childId}`, {params: { userId: userId }})
         .then(res => {
           if (res.data.length !== 0) {
-            console.log(res.data[0]);
+            // console.log(res.data[0]);
             const childData = res.data.map(child => ({
               ...child, isEdit: false
             }));
@@ -121,60 +125,10 @@ function Child() {
         .catch(err => console.log(err));
     }
 
-
   return (
-    <div className='d-flex min-vh-100 flex-column align-items-center'>
-        <h2>Child Info</h2>
-      <div  className='w-25 bg-white rounded p-3 '>
 
-        {
-          childList?.map((childData) => (
-            <div key= {childData.id_child}>
-              <form onSubmit={ (event) => {
-                childData.isEdit ? handleUpdate(event, childData.id_child) : handleEdit(event,childData.id_child);
-              }}>
-                <div className='card  mb-2'>
-                  <div className='card-header mb-2'>
-                    <div className='d-flex align-items-center'>
-                      <label className='me-2' htmlFor={`childName-${childData.id_child}`}></label>
-                      {childData.isEdit ? (
-                          <input id={`childName-${childData.id_child}`} type='text' placeholder='Name' className='form-control fs-5' value={childData.child_name}
-                                onChange={event => handleChange(childData.id_child, 'child_name', event.target.value)}  required />                      
-                        ) : ( 
-                          <p className='fs-5 mb-0'>{childData.child_name}</p>
-                        )}
-                      <div className="invalid-feedback">
-                         Please provide a valid name.
-                      </div>
-                    </div>
-                  </div>
-                  <div className='card-body flex-grow-1'>
-                    <div className='mb-2'>
-                      <div className='d-flex align-items-center'>
-                        <label className='me-2' htmlFor='childbirthday'>Birthday:</label>
-                        {childData.isEdit ? (
-                          <input id='childbirthday' type='text' placeholder='YYYY-MM-DD'className='form-control fs-5' value={childData.child_birthday}
-                                onChange={event => handleChange(childData.id_child, 'child_birthday', event.target.value)} required/>
-                        ) : ( 
-                          <p className='fs-5 mb-0'>{childData.child_birthday}</p>
-                        )}
-                      </div>
-                    </div>
-                    <div className='d-flex justify-content-end'>
-                      <button className='btn btn-outline-primary btn-sm  me-2'>
-                        {childData.isEdit ? 'Update' : 'Edit'}
-                      </button>
-                      <button onClick={ () => handleDelete(childData.id_child)} className='btn btn-outline-danger btn-sm'>
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </form>
-            </div>
-          ))
-        }
-
+    <div className='d-flex min-vh-100 flex-column align-items-center mt-1'>
+      <div className='w-100  rounded p-3'>
         {/* add nwe child */}
         {isAdd && (
           <form>
@@ -208,9 +162,71 @@ function Child() {
             <button onClick={() => setIsAdd(true)} className='btn btn-light btn-sm fs-6 text m-2'> + Add a child</button>
           )}
         </div>
+
+        {/* Child Cards */}
+        {
+          childList?.map((childData) => (
+            <div key= {childData.id_child} className='card mb-3'>
+              <div className='card-header'>
+
+                {/* child name */}
+                {childData.isEdit ? (
+                  <div>                  
+                    <label className='me-2' htmlFor={`childName-${childData.id_child}`}>Name</label>
+                    <input id={`childName-${childData.id_child}`} type='text' placeholder='Name' className='form-control mb-2' value={childData.child_name}
+                           onChange={event => handleChange(childData.id_child, 'child_name', event.target.value)}  required />                      
+                  </div>
+                  ) : ( 
+                    <div className='fs-5 mb-1'>{childData.child_name}</div>
+                )}
+
+
+                {/* child birthday */}
+                {childData.isEdit ? (
+                  <div>                  
+                    <label className='me-3' htmlFor='childbirthday'>Birthday</label>
+                    <input id='childbirthday' type='text' placeholder='YYYY-MM-DD'className='form-control' value={childData.child_birthday}
+                           onChange={event => handleChange(childData.id_child, 'child_birthday', event.target.value)} required/>
+                  </div>
+                  ) : ( 
+                    <div>Birthday: {childData.child_birthday}</div>
+                )}
+
+                <div className='d-flex justify-content-end'>
+                    <span className='text-primary me-2' style={{ cursor: 'pointer' }} 
+                          onClick={ (event) => {
+                            childData.isEdit ? handleUpdate(event, childData.id_child) : handleEdit(event,childData.id_child);}}>
+                        {childData.isEdit ? 'Update' : 'Edit'}
+                    </span>
+                    <span onClick={ () => handleDelete(childData.id_child)} className='text-danger' style={{ cursor: 'pointer' }} >
+                        Delete
+                    </span>
+                </div>
+              </div>
+
+              <div className='card-body'>
+                  <h6>Parties:</h6>
+                  {childData.child_parties && childData.child_parties.length > 0 ? (
+                      <ul className='list-unstyled'>
+                          {childData.child_parties.map((partyData) => (
+                              <li key = {partyData.id_party} >
+                                  <p style={{ cursor: 'pointer' }} onClick={() => navigate('/party', { state: { partyData, child_name: childData.child_name } })}>
+                                    {partyData.child_years} years old
+                                  </p>
+                              </li>
+                          ))}
+                      </ul>
+                  ):(
+                      <p>No parties registered</p>
+                  )}
+              </div>
+            </div>
+          ))
+        }
       </div>
     </div>
-  )
+
+  );
 }
 
 export default Child

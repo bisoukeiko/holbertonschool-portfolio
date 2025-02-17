@@ -4,7 +4,7 @@ import { getTodos, addTodo, updateTodo, updateTodoFlag, deleteTodo } from '../co
 const router = express.Router();
 
 router.get('/select', getTodos);
-router.post('/add', addTodo);
+router.post('/insert', addTodo);
 router.put('/update/:id', updateTodo);
 router.put('/updateFlag/:id', updateTodoFlag);
 router.delete('/delete/:id', deleteTodo);

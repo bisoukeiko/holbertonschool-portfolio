@@ -210,7 +210,7 @@ function Child() {
                       <ul className='list-unstyled'>
                           {childData.child_parties.map((partyData) => (
                               <li key = {partyData.id_party} >
-                                  <p style={{ cursor: 'pointer' }} onClick={() => navigate('/party', { state: { partyData, child_name: childData.child_name } })}>
+                                  <p style={{ cursor: 'pointer' }} onClick={() => navigate('/party', { state: { childList, partyData } })}>
                                     {partyData.child_years} years old
                                   </p>
                               </li>

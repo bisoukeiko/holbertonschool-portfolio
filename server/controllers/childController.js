@@ -28,11 +28,11 @@ export const getChildParty = (req, res) => {
   const { userId }  = req.query;
   const sql = `SELECT TBC.id_child,
                       TBC.child_name,
-                      DATE_FORMAT(TBC.child_birthday, '%Y-%m-%d') AS child_birthday,
+                      DATE_FORMAT(TBC.child_birthday, '%Y %M %d') AS child_birthday,
                       TBP.id_party,
-                      TBP.party_date,
-                      TBP.party_time_from,
-                      TBP.party_time_to,
+                      DATE_FORMAT(TBP.party_date, '%Y %M %d') AS party_date,
+                      TIME_FORMAT(TBP.party_time_from, '%H:%i') AS party_time_from,
+                      TIME_FORMAT(TBP.party_time_to, '%H:%i') AS party_time_to,
                       TBP.party_place,
                       TIMESTAMPDIFF(YEAR, TBC.child_birthday, TBP.party_date) AS child_years
                  FROM TB_CHILD AS TBC
@@ -62,6 +62,8 @@ export const getChildParty = (req, res) => {
         if (row.id_party) {
             childData[row.id_child].child_parties.push({
                 id_party: row.id_party,
+                id_child: row.id_child,
+                child_name: row.child_name,
                 party_date: row.party_date,
                 party_time_from: row.party_time_from,
                 party_time_to: row.party_time_to,

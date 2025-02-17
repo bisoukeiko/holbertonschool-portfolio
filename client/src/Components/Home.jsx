@@ -2,8 +2,7 @@ import { Link } from 'react-router-dom';
 import { useUser } from './UserContext';
 import User from './User';
 import Child from './Child';
-import Party from './Party';
-import Todo from './Todo';
+
 
 function Home() {
   const { userId } = useUser();
@@ -20,9 +19,6 @@ function Home() {
           <Child />
         </div>
       </div>
-
-      {/* <Party /> */}
-      {/* <Todo /> */}
     </div>
   )
 }

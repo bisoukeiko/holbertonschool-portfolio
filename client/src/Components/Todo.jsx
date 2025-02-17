@@ -2,20 +2,21 @@ import React, { useEffect, useState } from "react";
 import axios from 'axios';
 
 
-function Todo() {
+function Todo({ partyId }) {
     const [todos, setTodos] = useState([]);
     const [values, setValues] = useState({
         task: '',
+        idParty: partyId,
         fg_done: ''
     });
     const [task, setTask] = useState('');
     const [isEdit, setIsEdit] = useState(false);
 
     useEffect(()=> {
-        axios.get('http://localhost:5000/todoSelect')
+        axios.get(`http://localhost:5000/todo/select`, {params: { partyId: partyId }})
         .then(res => setTodos(res.data))
         .catch(err => console.log(err));
-    }, [])
+    }, [partyId])
 
     // addボタン押下
     const handleAddTask = (e) => {
@@ -23,12 +24,16 @@ function Todo() {
         if (!values.task) {
             return;
         } else {
-            axios.post('http://localhost:5000/todoAdd', values)
+            axios.post('http://localhost:5000/todo/insert', values)
             .then(res => {
                 console.log(res);
                 setTodos(res.data);
                 setTask('');
-                setValues('');
+                setValues({
+                    task: '',
+                    idParty: partyId,
+                    fg_done: ''
+                });
             })
             .catch(err => console.log(err));
         }
@@ -50,7 +55,7 @@ function Todo() {
         event.preventDefault();
         const updatedValues = { ...values };
         console.log(updatedValues);
-        axios.put(`http://localhost:5000/todoUpdate/${updateId}`, updatedValues)
+        axios.put(`http://localhost:5000/todo/update/${updateId}`, updatedValues)
         .then(res => {
             console.log(res);
             setTodos(res.data);
@@ -67,7 +72,7 @@ function Todo() {
         event.preventDefault();
         const updatedValues = { fg_done: currentFgDone ? 0 : 1 };
     
-        axios.put('http://localhost:5000/todoUpdatefg/'+id, updatedValues)
+        axios.put('http://localhost:5000/todo/updatefg/'+id, updatedValues)
         .then(res => {
             console.log(res);
             setTodos(res.data);
@@ -78,7 +83,7 @@ function Todo() {
 
     // 削除ボタン押下
     const handleDelete = (id) => {
-        axios.delete('http://localhost:5000/todoDelete/'+id)
+        axios.delete('http://localhost:5000/todo/delete/'+id)
         .then(res => {
             setTodos(res.data);
             setTask('');
@@ -87,8 +92,8 @@ function Todo() {
     }
 
     return (
-        <div className='d-flex vh-100 w-75 justify-content-center align-items-center'>
-            <div className='w-50 bg-white rounded p-3'>
+        <div className='d-flex vh-100 w-100 justify-content-center'>
+            <div className='w-100 bg-white rounded p-3'>
                 <h2>ToDo List</h2>
                 <form className="d-flex gap-2" onSubmit={isEdit ? handleUpdateTask : handleAddTask}>
                     <label htmlFor="task" className="visually-hidden">Task</label>

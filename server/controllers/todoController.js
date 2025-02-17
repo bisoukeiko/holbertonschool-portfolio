@@ -3,13 +3,15 @@ import { v4 as uuidv4 } from 'uuid';
 
 
 export const getTodos = (req, res) => {
+  const { partyId }  = req.query;
     const sql = `SELECT id_task,
                         id_party,
                         task,
                         fg_done
                    FROM TB_TODO
-               ORDER BY update_at desc;`
-  db.query(sql, (err, result)=> {
+                  WHERE id_party = ?
+               ORDER BY updated_at desc;`
+  db.query(sql, [partyId], (err, result)=> {
       if(err) {
         console.error("Database Error:", err);
         return res.status(500).json({Message: 'Error inside server', Error: err});
@@ -29,7 +31,7 @@ export const addTodo = (req, res) => {
   // console.log(res.body);
   const values = [
         uuidv4(),
-        'cda12573-e278-11ef-a2df-00155deb4d19',
+        req.body.idParty,
         req.body.task,
         false
   ];
@@ -39,6 +41,7 @@ export const addTodo = (req, res) => {
       console.error('Error insertion todo:', err);
       return res.status(500).json({ error: 'Database error' });
     } else {
+      req.query.partyId = req.body.idParty;
       getTodos(req, res);
     }
   });
@@ -53,6 +56,7 @@ export const updateTodo = (req, res) => {
         console.error("Database Error:", err);
         return res.status(500).json({Message: 'Error inside server', Error: err});
       } else {
+        req.query.partyId = req.body.idParty;
         getTodos(req, res);
       }
     });
@@ -71,6 +75,7 @@ export const updateTodoFlag = (req, res) => {
         console.error("Database Error:", err);
         return res.status(500).json({Message: 'Error inside server', Error: err});
       } else {
+        req.query.partyId = req.body.idParty;
         getTodos(req, res);
       }
     });
@@ -85,6 +90,7 @@ export const deleteTodo = (req, res) => {
         console.error("Database Error:", err);
         return res.json({Message: 'Error inside server', Error: err});
       } else {
+        req.query.partyId = req.body.idParty;
         getTodos(req, res);
       }
     }); 

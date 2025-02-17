@@ -1,24 +1,24 @@
 import { Link } from 'react-router-dom';
 import { useUser } from './UserContext';
-import User from "./User";
-import Child from "./Child";
-import Todo from "./Todo";
+import User from './User';
+import Child from './Child';
+
 
 function Home() {
   const { userId } = useUser();
 
   return (
-    <div>
-      <h1>Home</h1>
-      {userId ? (
-        <p>Welcome, user with ID: {userId}</p>
-      ) : (
-        <p>Please log in to access the content.</p>  // ログインしていない場合のメッセージ
-      )}
+    <div className='container mt-4'> {/* Bootstrapのコンテナを追加 */}
 
-      <User />
-      <Child />
-      {/* <Todo /> */}
+      {/* 横並びにするためのrowとcolを追加 */}
+      <div className='row justify-content-center'>
+        <div className='col-md-4'> {/* 画面幅の半分を使用 */}
+          <User />
+        </div>
+        <div className='col-md-4'> {/* 画面幅の半分を使用 */}
+          <Child />
+        </div>
+      </div>
     </div>
   )
 }

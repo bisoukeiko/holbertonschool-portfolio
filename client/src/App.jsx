@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { UserProvider } from './Components/UserContext';
 import Home from './Components/Home';
 import Header from './Components/Header';
+import Party from './Components/Party';
 import User from './Components/User';
 import Todo from './Components/Todo';
 
@@ -15,7 +16,8 @@ function App() {
         <Header />
         <Routes>
           <Route path='/' element={<Home />} />
-          {/* <Route path='/user' element={<User />} /> */}
+          <Route path='/party' element={<Party />} />
+        {/* <Route path='/user' element={<User />} /> */}
           {/* <Route path='/todo' element={<Todo />} /> */}
         </Routes>
       </Router>

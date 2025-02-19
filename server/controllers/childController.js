@@ -16,7 +16,7 @@ export const getChildByIdUser = (req, res) => {
     db.query(sql, [userId], (err, result)=> {
       if(err) {
         console.error("Database Error:", err);
-        return res.status(500).json({Message: 'Error selecting user', Error: err});
+        return res.status(500).json({Message: 'Error selecting child', Error: err});
       }
       return res.status(200).json(result);
     })
@@ -25,26 +25,32 @@ export const getChildByIdUser = (req, res) => {
 
 // select child & party with user ID
 export const getChildParty = (req, res) => {
-  const { userId }  = req.query;
+  const { userId, insertedUuid } = req.query;
   const sql = `SELECT TBC.id_child,
                       TBC.child_name,
                       DATE_FORMAT(TBC.child_birthday, '%Y %M %d') AS child_birthday,
                       TBP.id_party,
-                      DATE_FORMAT(TBP.party_date, '%Y %M %d') AS party_date,
+                      DATE_FORMAT(TBP.party_date, '%Y-%m-%d') AS party_date,
                       TIME_FORMAT(TBP.party_time_from, '%H:%i') AS party_time_from,
                       TIME_FORMAT(TBP.party_time_to, '%H:%i') AS party_time_to,
                       TBP.party_place,
-                      TIMESTAMPDIFF(YEAR, TBC.child_birthday, TBP.party_date) AS child_years
+                      TIMESTAMPDIFF(YEAR, TBC.child_birthday, TBP.party_date) AS child_years,
+                      TBP.party_contact1,
+                      TBP.party_contact2,
+                      TBU.user_phone
                  FROM TB_CHILD AS TBC
             LEFT JOIN TB_PARTY AS TBP 
                    ON TBC.id_child = TBP.id_child
-                WHERE TBC.id_parent = ?
-             ORDER BY child_birthday, TBP.party_date DESC;`
+            LEFT JOIN TB_USER AS TBU
+                   ON TBC.id_parent = TBU.id_user
+                WHERE TBU.id_user = ?
+                  AND TBC.id_parent = ?
+             ORDER BY TBC.child_birthday, TBP.party_date DESC;`
 
-  db.query(sql, [userId], (err, result)=> {
+  db.query(sql, [userId, userId], (err, result)=> {
     if(err) {
       console.error("Database Error:", err);
-      return res.status(500).json({Message: 'Error selecting user', Error: err});
+      return res.status(500).json({Message: 'Error selecting child et party', Error: err});
     }
 
     const childData = {};
@@ -61,19 +67,25 @@ export const getChildParty = (req, res) => {
 
         if (row.id_party) {
             childData[row.id_child].child_parties.push({
-                id_party: row.id_party,
-                id_child: row.id_child,
-                child_name: row.child_name,
-                party_date: row.party_date,
-                party_time_from: row.party_time_from,
-                party_time_to: row.party_time_to,
-                party_place: row.party_place,
-                child_years: row.child_years
+                idParty: row.id_party,
+                idChild: row.id_child,
+                childName: row.child_name,
+                partyDate: row.party_date,
+                partyTimeFrom: row.party_time_from,
+                partyTimeTo: row.party_time_to,
+                partyPlace: row.party_place,
+                childYears: row.child_years,
+                partyContact1 : row.party_contact1,
+                partyContact2 : row.party_contact2,
+                userPhone: row.user_phone
             })
         }
     });
 
-    return res.status(200).json(Object.values(childData));
+    return res.status(200).json({
+      insertedUuid: insertedUuid, // 挿入したUUIDを含める
+      parties: Object.values(childData)
+    });
   })
 };
 
@@ -97,7 +109,7 @@ export const insertChild = (req, res) => {
   db.query(sql, values, (err, result) => {
     if(err) {
       console.error('Error insertion child:', err);
-      return res.status(500).json({ error: 'Database error' });
+      return res.status(500).json({ error: 'Error insert child' });
     } else {
       req.query.userId = req.body.id_parent;
       getChildParty(req, res);
@@ -117,7 +129,7 @@ export const updateChild = (req, res) => {
   db.query(sql, [req.body.child_name, req.body.child_birthday, childId], (err, result) => {
     if(err) {
       console.error("Database Error:", err);
-      return res.status(500).json({Message: 'Error inside server', Error: err});
+      return res.status(500).json({Message: 'Error update child', Error: err});
     } else {
       req.query.userId = req.body.id_parent;
       getChildParty(req, res);
@@ -128,13 +140,15 @@ export const updateChild = (req, res) => {
 
 // delete child by child ID
 export const deleteChild = (req, res) => {
+  const { userId }  = req.query;
   const sql = 'DELETE FROM TB_CHILD WHERE id_child = ?;';
   const childId = req.params.childId;
   db.query(sql, [childId], (err, result) => {
     if(err) {
       console.error("Database Error:", err);
-      return res.json({Message: 'Error inside server', Error: err});
+      return res.json({Message: 'Error delete child', Error: err});
     } else {
+      req.query.userId = userId;
       getChildParty(req, res);
     }
   }); 

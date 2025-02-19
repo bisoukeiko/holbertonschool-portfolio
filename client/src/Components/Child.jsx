@@ -25,7 +25,7 @@ function Child() {
             .then(res => {
               if (res.data.length !== 0) {
                 // console.log(res.data);
-                const childData = res.data.map(child => ({
+                const childData = res.data.parties.map(child => ({
                   ...child, isEdit: false
                 }));
                 setChildList(childData);
@@ -71,7 +71,7 @@ function Child() {
       } else {
           axios.post('http://localhost:5000/child/insert', values)
           .then(res => {
-            const childData = res.data.map(child => ({...child, isEdit: false}));
+            const childData = res.data.parties.map(child => ({...child, isEdit: false}));
             setChildList(childData);
             setValues({
               childId: '',
@@ -96,7 +96,7 @@ function Child() {
       axios.put(`http://localhost:5000/child/update/${childId}`, updatedValues)
       .then(res => {
           // console.log(res);
-          const childData = res.data.map(child => ({...child, isEdit: false}));
+          const childData = res.data.parties.map(child => ({...child, isEdit: false}));
           setChildList(childData);
           setValues({
             childId: '',
@@ -113,8 +113,8 @@ function Child() {
       axios.delete(`http://localhost:5000/child/delete/${childId}`, {params: { userId: userId }})
         .then(res => {
           if (res.data.length !== 0) {
-            // console.log(res.data[0]);
-            const childData = res.data.map(child => ({
+            // console.log(res.data.parties.[0]);
+            const childData = res.data.parties.map(child => ({
               ...child, isEdit: false
             }));
             setChildList(childData);
@@ -192,6 +192,7 @@ function Child() {
                     <div>Birthday: {childData.child_birthday}</div>
                 )}
 
+                {/* Edit Delete */}
                 <div className='d-flex justify-content-end'>
                     <span className='text-primary me-2' style={{ cursor: 'pointer' }} 
                           onClick={ (event) => {
@@ -209,9 +210,9 @@ function Child() {
                   {childData.child_parties && childData.child_parties.length > 0 ? (
                       <ul className='list-unstyled'>
                           {childData.child_parties.map((partyData) => (
-                              <li key = {partyData.id_party} >
+                              <li key = {partyData.idParty} >
                                   <p style={{ cursor: 'pointer' }} onClick={() => navigate('/party', { state: { childList, partyData } })}>
-                                    {partyData.child_years} years old
+                                    {partyData.childYears} years old
                                   </p>
                               </li>
                           ))}

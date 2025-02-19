@@ -10,11 +10,11 @@ export const getTodos = (req, res) => {
                         fg_done
                    FROM TB_TODO
                   WHERE id_party = ?
-               ORDER BY updated_at desc;`
+               ORDER BY created_at desc;`
   db.query(sql, [partyId], (err, result)=> {
       if(err) {
         console.error("Database Error:", err);
-        return res.status(500).json({Message: 'Error inside server', Error: err});
+        return res.status(500).json({Message: 'Error select todo', Error: err});
       }
       return res.status(201).json(result);
     });
@@ -28,10 +28,10 @@ export const addTodo = (req, res) => {
                         task,
                         fg_done)
                 VALUES (?, ?, ?, ?);`;
-  // console.log(res.body);
+  // console.log('insert', req.body);
   const values = [
         uuidv4(),
-        req.body.idParty,
+        req.body.id_party,
         req.body.task,
         false
   ];
@@ -39,9 +39,9 @@ export const addTodo = (req, res) => {
   db.query(sql, values, (err, result) => {
     if(err) {
       console.error('Error insertion todo:', err);
-      return res.status(500).json({ error: 'Database error' });
+      return res.status(500).json({ error: 'Error insert todo' });
     } else {
-      req.query.partyId = req.body.idParty;
+      req.query.partyId = req.body.id_party;
       getTodos(req, res);
     }
   });
@@ -54,9 +54,9 @@ export const updateTodo = (req, res) => {
     db.query(sql, [req.body.task, id], (err, result) => {
       if(err) {
         console.error("Database Error:", err);
-        return res.status(500).json({Message: 'Error inside server', Error: err});
+        return res.status(500).json({Message: 'Error update todo', Error: err});
       } else {
-        req.query.partyId = req.body.idParty;
+        req.query.partyId = req.body.id_party;
         getTodos(req, res);
       }
     });
@@ -73,9 +73,9 @@ export const updateTodoFlag = (req, res) => {
     db.query(sql, [updatedFlag, id], (err, result) => {
       if(err) {
         console.error("Database Error:", err);
-        return res.status(500).json({Message: 'Error inside server', Error: err});
+        return res.status(500).json({Message: 'Error update todo flag', Error: err});
       } else {
-        req.query.partyId = req.body.idParty;
+        req.query.partyId = req.body.id_party;
         getTodos(req, res);
       }
     });
@@ -88,10 +88,27 @@ export const deleteTodo = (req, res) => {
     db.query(sql, [id], (err, result) => {
       if(err) {
         console.error("Database Error:", err);
-        return res.json({Message: 'Error inside server', Error: err});
+        return res.json({Message: 'Error delete todo', Error: err});
       } else {
-        req.query.partyId = req.body.idParty;
+        req.query.partyId = req.body.id_party;
         getTodos(req, res);
       }
     }); 
+};
+
+
+export const deleteTodoByParty = (partyId) => {
+  return new Promise((resolve, reject) => {
+
+    const sql = 'DELETE FROM TB_TODO WHERE id_party = ?;';
+
+    db.query(sql, [partyId], (err, result) => {
+      if(err) {
+        console.error("Error delete todos", err);
+        return reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  }); 
 };

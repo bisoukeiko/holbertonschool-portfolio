@@ -48,7 +48,7 @@ function User() {
     console.log("Updating user:", userInfo);
     axios.put(`http://localhost:5000/user/update`, userInfo)
     .then((res) => {
-      console.log("User updated successfully:", res.data);
+      // console.log("User updated successfully:", res.data);
       // alert("User updated successfully!");
     })
     .catch((err) => console.error("Error updating user:", err));

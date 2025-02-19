@@ -6,11 +6,12 @@ function Todo({ partyId }) {
     const [todos, setTodos] = useState([]);
     const [values, setValues] = useState({
         task: '',
-        idParty: partyId,
+        id_party: partyId,
         fg_done: ''
     });
     const [task, setTask] = useState('');
     const [isEdit, setIsEdit] = useState(false);
+    const [updateId, setUpdateID] = useState(null);
 
     useEffect(()=> {
         axios.get(`http://localhost:5000/todo/select`, {params: { partyId: partyId }})
@@ -31,7 +32,7 @@ function Todo({ partyId }) {
                 setTask('');
                 setValues({
                     task: '',
-                    idParty: partyId,
+                    id_party: partyId,
                     fg_done: ''
                 });
             })
@@ -40,11 +41,10 @@ function Todo({ partyId }) {
     }
 
     // Editボタン押下
-    const [updateId, setUpdateID] = useState(null);
-
     const handleEdit = (event, id, task) => {
         event.preventDefault();
         setIsEdit(true);
+        setValues(todos.find(todo => todo.id_task === id));
         setTask(task);
         setUpdateID(id);
 
@@ -54,10 +54,10 @@ function Todo({ partyId }) {
     const handleUpdateTask = (event) => {
         event.preventDefault();
         const updatedValues = { ...values };
-        console.log(updatedValues);
+        console.log('updatedValues', updatedValues);
         axios.put(`http://localhost:5000/todo/update/${updateId}`, updatedValues)
         .then(res => {
-            console.log(res);
+            // console.log('update: ', res.data);
             setTodos(res.data);
             setTask('');
             setIsEdit(false);
@@ -70,11 +70,12 @@ function Todo({ partyId }) {
     // ステータスの変更
     const handleTodoDone = (event, id, currentFgDone) => {
         event.preventDefault();
-        const updatedValues = { fg_done: currentFgDone ? 0 : 1 };
+        const updatedValues = { ...values, fg_done: currentFgDone ? 0 : 1 };
+        // console.log('id_party', updatedValues.id_party);
     
-        axios.put('http://localhost:5000/todo/updatefg/'+id, updatedValues)
+        axios.put('http://localhost:5000/todo/updateFlag/'+id, updatedValues)
         .then(res => {
-            console.log(res);
+            // console.log('updateF: ', res.data);
             setTodos(res.data);
             setTask('');
         })
@@ -83,7 +84,7 @@ function Todo({ partyId }) {
 
     // 削除ボタン押下
     const handleDelete = (id) => {
-        axios.delete('http://localhost:5000/todo/delete/'+id)
+        axios.delete('http://localhost:5000/todo/delete/'+id, {data: {'id_party': partyId }})
         .then(res => {
             setTodos(res.data);
             setTask('');
@@ -101,7 +102,7 @@ function Todo({ partyId }) {
                         id='task'
                         type='text'
                         value={task}
-                        placeholder='Enter todo'
+                        placeholder='Enter the task'
                         className='form-control' 
                         onChange={e => {setTask(e.target.value);
                             setValues({...values, task: e.target.value});
@@ -128,10 +129,21 @@ function Todo({ partyId }) {
                                         <input type='checkbox' checked={tbTodo.fg_done} readOnly onChange={(event) => handleTodoDone(event, tbTodo.id_task, tbTodo.fg_done)} />
                                     </label>
                                 </td>
-                                <td className={`${tbTodo.fg_done ? 'text-decoration-line-through' : ''}`}>{tbTodo.task}</td>
-                                <td>
-                                    <button onClick={ (event) => handleEdit(event, tbTodo.id_task, tbTodo.task)} className='btn btn-sm btn-outline-primary mx-2'>Edit</button>
-                                    <button onClick={ () => handleDelete(tbTodo.id_task)} className='btn btn-sm btn-outline-danger'>Delete</button>
+                                <td className={`${tbTodo.fg_done ? 'text-decoration-line-through' : ''}`}>
+                                    <div className='text-break'>
+                                        {tbTodo.task}
+                                    </div>
+                                </td>
+                                <td className='align-middle text-center'>
+                                    <div className='d-flex flex-column align-items-end justify-content-center'>
+                                        <span className='text-primary' style={{ cursor: 'pointer' }} 
+                                            onClick={(event) => handleEdit(event, tbTodo.id_task, tbTodo.task)}>
+                                            Edit
+                                        </span>
+                                        <span onClick={() => handleDelete(tbTodo.id_task)} className='text-danger' style={{ cursor: 'pointer' }} >
+                                            Delete
+                                        </span>
+                                    </div>
                                 </td>
                             </tr>
                         })}

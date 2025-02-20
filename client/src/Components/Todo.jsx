@@ -110,9 +110,9 @@ function Todo({ partyId }) {
     }
 
     return (
-        <div className='d-flex vh-100 w-100 justify-content-center'>
-            <div className='w-100 bg-white rounded p-3'>
-                <h2>ToDo List</h2>
+        <div className='d-flex w-100 justify-content-center mt-3'>
+            <div className='card w-100 p-4 m-3'>
+                <h3>Todo List</h3>
                 <form className="d-flex gap-2" onSubmit={isEdit ? handleUpdateTask : handleAddTask}>
                     <label htmlFor="task" className="visually-hidden">Task</label>
                     <input 
@@ -125,8 +125,8 @@ function Todo({ partyId }) {
                             setValues({...values, task: e.target.value});
                         }}
                     />
-                    <button type='submit' className='btn btn-outline-success btn-sm'>
-                        {isEdit ? 'Update' : 'add'}
+                    <button type='submit' className='btn btn-outline-success'>
+                        {isEdit ? 'Update' : 'Add'}
                     </button>
                 </form>
     
@@ -166,8 +166,8 @@ function Todo({ partyId }) {
                                     </div>
                                 </td>
                                 <td className='align-middle text-center'>
-                                    <div className='d-flex flex-column align-items-end justify-content-center'>
-                                        <span className='text-primary' style={{ cursor: 'pointer' }} 
+                                    <div className='align-items-end justify-content-center'>
+                                        <span className='text-primary me-3' style={{ cursor: 'pointer' }} 
                                             onClick={(event) => handleEdit(event, tbTodo.id_task, tbTodo.task)}>
                                             Edit
                                         </span>

@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import {Dropdown, Form } from 'react-bootstrap';
 import Todo from './Todo';
+import Shopping from './Shopping';
 
 
 function Party() {
@@ -229,24 +230,8 @@ function Party() {
       
       <div className='container mt-5'> 
         <div className='row'>
-            <div className='col-md-4'>
-                {/* Add button */}
-                <div className=''>
-                        {isAdd ? (
-                            <button onClick={handleCancel} className='btn btn-outline-danger btn-sm text ms-4 p-2'
-                                    style={{ width: '150px' }}>
-                                Cancel addition
-                            </button>
-                        ) : (
-                            <button onClick={() => setIsAdd(true)} className='btn btn-light btn-sm fs-5 text ms-4 p-3'
-                                    style={{ width: '200px' }}>
-                                + Add a new party
-                            </button>
-                        )}
-                </div>
-            </div>
-            <div className='col-md-6'>
-                <div className='d-flex'>
+            <div className='col'>
+                <div className='d-flex justify-content-center'>
                     <Dropdown className='me-4'>
                         <Dropdown.Toggle variant='light' id='dropdown-basic' style={{ width: '200px' }}>
                             {selectedChildName || 'Select Child'}
@@ -281,6 +266,23 @@ function Party() {
                 </div>
             </div>
         </div>
+        <div className='row'>
+            {/* Add button */}
+            <div className='mt-3'>
+                    {isAdd ? (
+                        <button onClick={handleCancel} className='btn btn-outline-danger btn-sm text ms-4 p-2'
+                                style={{ width: '150px' }}>
+                            Cancel addition
+                        </button>
+                    ) : (
+                        <button onClick={() => setIsAdd(true)} className='btn btn-light btn-sm fs-5 text ms-4 p-3'
+                                style={{ width: '200px' }}>
+                            + Add a new party
+                        </button>
+                    )}
+            </div>
+        </div>
+
     </div>
 
       {noPartiesMsg ? (
@@ -293,10 +295,10 @@ function Party() {
             </div>
         ) : (
             <div className='container mt-4'> 
-                <div className='row justify-content-center'>
+                <div className='row  g-0'>
                     <div className='col-md-4'> {/* 画面幅の半分を使用 */}
 
-                        <div className='d-flex min-vh-100 flex-column mt-1'>
+                        <div className='d-flex flex-column mt-1'>
                             <div  className='w-100 bg-white rounded p-3 '>
                                 {/* new party form */}
                                 {isAdd ? (
@@ -479,7 +481,12 @@ function Party() {
                         </div>
             
                     </div>
-                    <div className='col-md-4'> {/* 画面幅の半分を使用 */}
+                    <div className='col-md-6'>
+                        <div></div>
+                    </div>
+                </div>
+                <div className='row g-0'>
+                    <div className='col-md-6'>
                         {!isAdd && (
                             <div>
                                 {selectedYear && (
@@ -490,17 +497,18 @@ function Party() {
                             </div>
                         )}
                     </div>
-                    <div className='col-md-4'> {/* 画面幅の半分を使用 */}
+                    <div className='col-md-6'>
                         {!isAdd && (
                             <div>
                                 {selectedYear && (
                                     <div>
-                                        <Todo partyId={selectedParty} />
+                                        <Shopping partyId={selectedParty} />
                                     </div>
                                 )}
                             </div>
                         )}
                     </div>
+
                 </div>
             </div>
         )}

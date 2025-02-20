@@ -12,6 +12,7 @@ function Todo({ partyId }) {
     const [task, setTask] = useState('');
     const [isEdit, setIsEdit] = useState(false);
     const [updateId, setUpdateID] = useState(null);
+    const [errValidation, setErrValidation] = useState([]);
 
     useEffect(()=> {
         axios.get(`http://localhost:5000/todo/select`, {params: { partyId: partyId }})
@@ -27,7 +28,7 @@ function Todo({ partyId }) {
         } else {
             axios.post('http://localhost:5000/todo/insert', values)
             .then(res => {
-                console.log(res);
+                // console.log(res);
                 setTodos(res.data);
                 setTask('');
                 setValues({
@@ -35,8 +36,15 @@ function Todo({ partyId }) {
                     id_party: partyId,
                     fg_done: ''
                 });
+                setErrValidation([]);
             })
-            .catch(err => console.log(err));
+            .catch((err) => {
+                if (err.response && err.response.data.errors) {
+                  setErrValidation(err.response.data.errors.join('\n'));
+                } else {
+                  console.error("Error updating user:", err);
+                }
+            })
         }
     }
 
@@ -54,16 +62,23 @@ function Todo({ partyId }) {
     const handleUpdateTask = (event) => {
         event.preventDefault();
         const updatedValues = { ...values };
-        console.log('updatedValues', updatedValues);
+        // console.log('updatedValues', updatedValues);
         axios.put(`http://localhost:5000/todo/update/${updateId}`, updatedValues)
         .then(res => {
             // console.log('update: ', res.data);
             setTodos(res.data);
             setTask('');
             setIsEdit(false);
+            setErrValidation([]);
 
         })
-        .catch(err => console.log(err));
+        .catch((err) => {
+            if (err.response && err.response.data.errors) {
+              setErrValidation(err.response.data.errors.join('\n'));
+            } else {
+              console.error("Error updating user:", err);
+            }
+        })
 
     }
 
@@ -78,6 +93,7 @@ function Todo({ partyId }) {
             // console.log('updateF: ', res.data);
             setTodos(res.data);
             setTask('');
+            setErrValidation([]);
         })
         .catch(err => console.log(err));
     }
@@ -88,6 +104,7 @@ function Todo({ partyId }) {
         .then(res => {
             setTodos(res.data);
             setTask('');
+            setErrValidation([]);
         })
         .catch(err => console.log(err));
     }
@@ -103,17 +120,31 @@ function Todo({ partyId }) {
                         type='text'
                         value={task}
                         placeholder='Enter the task'
-                        className='form-control' 
+                        className='form-control text-break' 
                         onChange={e => {setTask(e.target.value);
                             setValues({...values, task: e.target.value});
                         }}
                     />
-                    <button type='submit' className='btn btn-success'>
+                    <button type='submit' className='btn btn-outline-success btn-sm'>
                         {isEdit ? 'Update' : 'add'}
                     </button>
                 </form>
+    
+                {/* error message */}
+                <div>
+                    {errValidation && (
+                    <div className='text-danger ms-3' style={{ whiteSpace: 'pre-wrap' }}>
+                        {errValidation}
+                    </div>
+                    )}
+                </div>
                 
                 <table className='table'>
+                    <colgroup>
+                        <col style={{ width: '5%' }} />
+                        <col style={{ width: '70%' }} />
+                        <col style={{ width: '25%' }} />
+                    </colgroup>
                     <thead>
                         <tr>
                             <th></th>

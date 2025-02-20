@@ -2,39 +2,39 @@ import React, { useEffect, useState } from "react";
 import axios from 'axios';
 
 
-function Todo({ partyId }) {
-    const [todos, setTodos] = useState([]);
+function Shopping({ partyId }) {
+    const [shopItems, setShopItems] = useState([]);
     const [values, setValues] = useState({
-        task: '',
+        valueItem: '',
         id_party: partyId,
-        fg_done: ''
+        shop_fg_done: ''
     });
-    const [task, setTask] = useState('');
+    const [itemValue, setItemValue] = useState('');
     const [isEdit, setIsEdit] = useState(false);
     const [updateId, setUpdateID] = useState(null);
     const [errValidation, setErrValidation] = useState([]);
 
     useEffect(()=> {
-        axios.get(`http://localhost:5000/todo/select`, {params: { partyId: partyId }})
-        .then(res => setTodos(res.data))
+        axios.get(`http://localhost:5000/shopping/select`, {params: { partyId: partyId }})
+        .then(res => setShopItems(res.data))
         .catch(err => console.log(err));
     }, [partyId])
 
     // addボタン押下
-    const handleAddTask = (e) => {
+    const handleAdd = (e) => {
         e.preventDefault();
-        if (!values.task) {
+        if (!values.valueItem) {
             return;
         } else {
-            axios.post('http://localhost:5000/todo/insert', values)
+            axios.post('http://localhost:5000/shopping/insert', values)
             .then(res => {
                 // console.log(res);
-                setTodos(res.data);
-                setTask('');
+                setShopItems(res.data);
+                setItemValue('');
                 setValues({
-                    task: '',
+                    valueItem: '',
                     id_party: partyId,
-                    fg_done: ''
+                    shop_fg_done: ''
                 });
                 setErrValidation([]);
             })
@@ -49,28 +49,27 @@ function Todo({ partyId }) {
     }
 
     // Editボタン押下
-    const handleEdit = (event, id, task) => {
+    const handleEdit = (event, idItem, valueItem) => {
         event.preventDefault();
         setIsEdit(true);
-        setValues(todos.find(todo => todo.id_task === id));
-        setTask(task);
-        setUpdateID(id);
+        setValues(shopItems.find(item => item.id_item === idItem));
+        setItemValue(valueItem);
+        setUpdateID(idItem);
 
     }
 
     // updateボタン押下
-    const handleUpdateTask = (event) => {
+    const handleUpdate = (event) => {
         event.preventDefault();
         const updatedValues = { ...values };
         // console.log('updatedValues', updatedValues);
-        axios.put(`http://localhost:5000/todo/update/${updateId}`, updatedValues)
+        axios.put(`http://localhost:5000/shopping/update/${updateId}`, updatedValues)
         .then(res => {
             // console.log('update: ', res.data);
-            setTodos(res.data);
-            setTask('');
+            setShopItems(res.data);
+            setItemValue('');
             setIsEdit(false);
             setErrValidation([]);
-
         })
         .catch((err) => {
             if (err.response && err.response.data.errors) {
@@ -79,31 +78,30 @@ function Todo({ partyId }) {
               console.error("Error updating user:", err);
             }
         })
-
     }
 
     // ステータスの変更
-    const handleTodoDone = (event, id, currentFgDone) => {
+    const handleDone = (event, idItem, currentFgDone) => {
         event.preventDefault();
-        const updatedValues = { ...values, fg_done: currentFgDone ? 0 : 1 };
+        const updatedValues = { ...values, shop_fg_done: currentFgDone ? 0 : 1 };
         // console.log('id_party', updatedValues.id_party);
     
-        axios.put('http://localhost:5000/todo/updateFlag/'+id, updatedValues)
+        axios.put('http://localhost:5000/shopping/updateFlag/'+idItem, updatedValues)
         .then(res => {
             // console.log('updateF: ', res.data);
-            setTodos(res.data);
-            setTask('');
+            setShopItems(res.data);
+            setItemValue('');
             setErrValidation([]);
         })
         .catch(err => console.log(err));
     }
 
     // 削除ボタン押下
-    const handleDelete = (id) => {
-        axios.delete('http://localhost:5000/todo/delete/'+id, {data: {'id_party': partyId }})
+    const handleDelete = (idItem) => {
+        axios.delete('http://localhost:5000/shopping/delete/'+idItem, {data: {'id_party': partyId }})
         .then(res => {
-            setTodos(res.data);
-            setTask('');
+            setShopItems(res.data);
+            setItemValue('');
             setErrValidation([]);
         })
         .catch(err => console.log(err));
@@ -112,17 +110,17 @@ function Todo({ partyId }) {
     return (
         <div className='d-flex w-100 justify-content-center mt-3'>
             <div className='card w-100 p-4 m-3'>
-                <h3>Todo List</h3>
-                <form className="d-flex gap-2" onSubmit={isEdit ? handleUpdateTask : handleAddTask}>
-                    <label htmlFor="task" className="visually-hidden">Task</label>
+                <h3>Shopping List</h3>
+                <form className="d-flex gap-2" onSubmit={isEdit ? handleUpdate : handleAdd}>
+                    <label htmlFor="item" className="visually-hidden">itemValue</label>
                     <input 
-                        id='task'
+                        id='item'
                         type='text'
-                        value={task}
-                        placeholder='Enter the task'
+                        value={itemValue}
+                        placeholder='Enter the item'
                         className='form-control text-break' 
-                        onChange={e => {setTask(e.target.value);
-                            setValues({...values, task: e.target.value});
+                        onChange={e => {setItemValue(e.target.value);
+                            setValues({...values, valueItem: e.target.value});
                         }}
                     />
                     <button type='submit' className='btn btn-outline-success'>
@@ -153,25 +151,25 @@ function Todo({ partyId }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {todos?.map((tbTodo, index) => {
+                        {shopItems?.map((tbShop, index) => {
                             return <tr key={index}>
                                 <td>
                                     <label>
-                                        <input type='checkbox' checked={tbTodo.fg_done} readOnly onChange={(event) => handleTodoDone(event, tbTodo.id_task, tbTodo.fg_done)} />
+                                        <input type='checkbox' checked={tbShop.shop_fg_done} readOnly onChange={(event) => handleDone(event, tbShop.id_item, tbShop.shop_fg_done)} />
                                     </label>
                                 </td>
-                                <td className={`${tbTodo.fg_done ? 'text-decoration-line-through' : ''}`}>
+                                <td className={`${tbShop.shop_fg_done ? 'text-decoration-line-through' : ''}`}>
                                     <div className='text-break'>
-                                        {tbTodo.task}
+                                        {tbShop.shop_item}
                                     </div>
                                 </td>
                                 <td className='align-middle text-center'>
                                     <div className='align-items-end justify-content-center'>
                                         <span className='text-primary me-3' style={{ cursor: 'pointer' }} 
-                                            onClick={(event) => handleEdit(event, tbTodo.id_task, tbTodo.task)}>
+                                            onClick={(event) => handleEdit(event, tbShop.id_item, tbShop.shop_item)}>
                                             Edit
                                         </span>
-                                        <span onClick={() => handleDelete(tbTodo.id_task)} className='text-danger' style={{ cursor: 'pointer' }} >
+                                        <span onClick={() => handleDelete(tbShop.id_item)} className='text-danger' style={{ cursor: 'pointer' }} >
                                             Delete
                                         </span>
                                     </div>
@@ -185,4 +183,4 @@ function Todo({ partyId }) {
     )
 }
 
-export default Todo;
+export default Shopping;

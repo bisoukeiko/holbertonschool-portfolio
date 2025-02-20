@@ -1,5 +1,6 @@
 import db from '../db.js';
 import { v4 as uuidv4 } from 'uuid';
+import TodoValidator from '../validators/TodoValidator.js';
 
 
 export const getTodos = (req, res) => {
@@ -22,17 +23,26 @@ export const getTodos = (req, res) => {
 
 
 export const addTodo = (req, res) => {
+
+  const { id_party, task } = req.body;
+  const validator = new TodoValidator(task);
+  if (!validator.validate()) {
+    // console.log(validator.getErrors());
+    return res.status(400).json({errors: validator.getErrors()});
+  }
+
   const sql = `INSERT INTO TB_TODO 
                        (id_task,
                         id_party,
                         task,
                         fg_done)
                 VALUES (?, ?, ?, ?);`;
+
   // console.log('insert', req.body);
   const values = [
         uuidv4(),
-        req.body.id_party,
-        req.body.task,
+        id_party,
+        task,
         false
   ];
 
@@ -49,9 +59,17 @@ export const addTodo = (req, res) => {
 
 
 export const updateTodo = (req, res) => {
+
+    const { task } = req.body;
+    const validator = new TodoValidator(task);
+    if (!validator.validate()) {
+      // console.log(validator.getErrors());
+      return res.status(400).json({errors: validator.getErrors()});
+    }
+
     const sql = 'UPDATE TB_TODO SET task = ? WHERE id_task=?;';
     const id = req.params.id;
-    db.query(sql, [req.body.task, id], (err, result) => {
+    db.query(sql, [task, id], (err, result) => {
       if(err) {
         console.error("Database Error:", err);
         return res.status(500).json({Message: 'Error update todo', Error: err});

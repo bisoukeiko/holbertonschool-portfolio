@@ -72,7 +72,7 @@ export const updateUser = (req, res) => {
 
     const validator = new UserValidator(userName, userEmail, userPhone);
     if (!validator.validate()) {
-      console.log(validator.getErrors());
+      // console.log(validator.getErrors());
       return res.status(400).json({errors: validator.getErrors()});
     }
 

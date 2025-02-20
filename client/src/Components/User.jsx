@@ -6,8 +6,9 @@ function User() {
   const { userId } = useUser();
 
   const [isEdit, setIsEdit] = useState(false);
+  const [errValidation, setErrValidation] = useState([]);
   const [userInfo, setUserInfo] = useState({
-    idUser: '',
+    idUser: userId,
     userName: '',
     userEmail: '',
     userPhone: ''
@@ -45,23 +46,31 @@ function User() {
   const handleUpdate = (e) => {
     e.preventDefault();
 
-    console.log("Updating user:", userInfo);
+    //console.log("Updating user:", userInfo);
     axios.put(`http://localhost:5000/user/update`, userInfo)
     .then((res) => {
-      // console.log("User updated successfully:", res.data);
-      // alert("User updated successfully!");
+        //  console.log("User updated successfully:", res.data);
+        // alert("User updated successfully!");
+        setIsEdit(false);
+        setErrValidation([]);
     })
-    .catch((err) => console.error("Error updating user:", err));
+    .catch((err) => {
+        if (err.response && err.response.data.errors) {
+          setErrValidation(err.response.data.errors.join('\n'));
+        } else {
+          console.error("Error updating user:", err);
+        }
+    })
     
-    setIsEdit(false);
+    
   };
 
 
   return (
     <div className='d-flex vh-100 flex-column align-items-center mt-5'>
       <div className='w-100 bg-white rounded p-3 '>
-          <form>
 
+          <form>
               <div className='card d-flex flex-column h-100'>
                 <div className='card-header'>
                     <label htmlFor='userName'>user name:</label>
@@ -99,6 +108,15 @@ function User() {
                 </div>
               </div>
           </form>
+
+          {/* error message */}
+          <div>
+            {errValidation && (
+              <div className='text-danger ms-3' style={{ whiteSpace: 'pre-wrap' }}>
+                {errValidation}
+              </div>
+            )}
+          </div>
       </div>
     </div>
   )

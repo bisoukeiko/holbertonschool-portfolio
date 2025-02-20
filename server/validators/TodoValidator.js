@@ -10,7 +10,7 @@ class TodoValidator {
         }
 
         if (this.todoTask.length > 50 ) {
-            this.errors.push('Task must be less than 50 lettres.')
+            this.errors.push('Task must be less than 50 letters.')
         } 
     }
 

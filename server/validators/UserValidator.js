@@ -33,6 +33,7 @@ class UserValidator {
     }
 
     validate() {
+        this.errors = [];
         this.validateUserName();
         this.validateUserEmail();
         this.validateUserPhone();

@@ -1,5 +1,6 @@
 import db from '../db.js';
 import { v4 as uuidv4 } from 'uuid';
+import ChildValidator from '../validators/ChildValidator.js';
 
 
 // select child with user ID
@@ -28,7 +29,7 @@ export const getChildParty = (req, res) => {
   const { userId, insertedUuid } = req.query;
   const sql = `SELECT TBC.id_child,
                       TBC.child_name,
-                      DATE_FORMAT(TBC.child_birthday, '%Y %M %d') AS child_birthday,
+                      DATE_FORMAT(TBC.child_birthday, '%Y-%m-%d') AS child_birthday,
                       TBP.id_party,
                       DATE_FORMAT(TBP.party_date, '%Y-%m-%d') AS party_date,
                       TIME_FORMAT(TBP.party_time_from, '%H:%i') AS party_time_from,
@@ -92,6 +93,15 @@ export const getChildParty = (req, res) => {
 
 // insert child
 export const insertChild = (req, res) => {
+
+  const { id_parent, child_name, child_birthday } = req.body;
+  const validator = new ChildValidator(child_name, child_birthday);
+  if (!validator.validate()) {
+    // console.log(validator.getErrors());
+    return res.status(400).json({errors: validator.getErrors()});
+  }
+
+
   const sql = `INSERT INTO TB_CHILD 
                        (id_child,
                         id_parent,
@@ -99,12 +109,7 @@ export const insertChild = (req, res) => {
                         child_birthday)
                 VALUES (?, ?, ?, ?);`;
 
-        const values = [
-          uuidv4(),
-          req.body.id_parent,
-          req.body.child_name,
-          req.body.child_birthday
-        ];
+        const values = [uuidv4(), id_parent, child_name, child_birthday];
 
   db.query(sql, values, (err, result) => {
     if(err) {
@@ -120,6 +125,14 @@ export const insertChild = (req, res) => {
 
 // update child by child ID
 export const updateChild = (req, res) => {
+
+  const { child_name, child_birthday } = req.body;
+  const validator = new ChildValidator(child_name, child_birthday);
+  if (!validator.validate()) {
+    // console.log(validator.getErrors());
+    return res.status(400).json({errors: validator.getErrors()});
+  }
+
   const sql = `UPDATE TB_CHILD 
                   SET child_name = ?,
                       child_birthday = ?

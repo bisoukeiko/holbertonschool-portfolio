@@ -16,6 +16,7 @@ class TodoValidator {
 
 
     validate() {
+        this.errors = [];
         this.validateTodoTask();
         return this.errors.length === 0;
     }

@@ -14,11 +14,15 @@ function Todo({ partyId }) {
     const [updateId, setUpdateID] = useState(null);
     const [errValidation, setErrValidation] = useState([]);
 
+
     useEffect(()=> {
-        axios.get(`http://localhost:5000/todo/select`, {params: { partyId: partyId }})
-        .then(res => setTodos(res.data))
-        .catch(err => console.log(err));
+        if (partyId) {
+            axios.get(`http://localhost:5000/todo/select`, {params: { partyId: partyId }})
+            .then(res => setTodos(res.data))
+            .catch(err => console.log(err));
+        }
     }, [partyId])
+
 
     // addボタン押下
     const handleAddTask = (e) => {
@@ -111,75 +115,79 @@ function Todo({ partyId }) {
 
     return (
         <div className='d-flex w-100 justify-content-center mt-3'>
-            <div className='card w-100 p-4 m-3'>
-                <h3>Todo List</h3>
-                <form className="d-flex gap-2" onSubmit={isEdit ? handleUpdateTask : handleAddTask}>
-                    <label htmlFor="task" className="visually-hidden">Task</label>
-                    <input 
-                        id='task'
-                        type='text'
-                        value={task}
-                        placeholder='Enter the task'
-                        className='form-control text-break' 
-                        onChange={e => {setTask(e.target.value);
-                            setValues({...values, task: e.target.value});
-                        }}
-                    />
-                    <button type='submit' className='btn btn-outline-success'>
-                        {isEdit ? 'Update' : 'Add'}
-                    </button>
-                </form>
-    
-                {/* error message */}
-                <div>
-                    {errValidation && (
-                    <div className='text-danger ms-3' style={{ whiteSpace: 'pre-wrap' }}>
-                        {errValidation}
-                    </div>
-                    )}
+            <div className='card w-100 m-3'>
+                <div className='card-header'>
+                    <h4 className='p-1'>Todo List</h4>
                 </div>
-                
-                <table className='table'>
-                    <colgroup>
-                        <col style={{ width: '5%' }} />
-                        <col style={{ width: '70%' }} />
-                        <col style={{ width: '25%' }} />
-                    </colgroup>
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {todos?.map((tbTodo, index) => {
-                            return <tr key={index}>
-                                <td>
-                                    <label>
-                                        <input type='checkbox' checked={tbTodo.fg_done} readOnly onChange={(event) => handleTodoDone(event, tbTodo.id_task, tbTodo.fg_done)} />
-                                    </label>
-                                </td>
-                                <td className={`${tbTodo.fg_done ? 'text-decoration-line-through' : ''}`}>
-                                    <div className='text-break'>
-                                        {tbTodo.task}
-                                    </div>
-                                </td>
-                                <td className='align-middle text-center'>
-                                    <div className='align-items-end justify-content-center'>
-                                        <span className='text-primary me-3' style={{ cursor: 'pointer' }} 
-                                            onClick={(event) => handleEdit(event, tbTodo.id_task, tbTodo.task)}>
-                                            Edit
-                                        </span>
-                                        <span onClick={() => handleDelete(tbTodo.id_task)} className='text-danger' style={{ cursor: 'pointer' }} >
-                                            Delete
-                                        </span>
-                                    </div>
-                                </td>
+                <div className='card-body p-3'>
+                    <form className="d-flex gap-2" onSubmit={isEdit ? handleUpdateTask : handleAddTask}>
+                        <label htmlFor="task" className="visually-hidden">Task</label>
+                        <input 
+                            id='task'
+                            type='text'
+                            value={task}
+                            placeholder='Enter the task'
+                            className='form-control text-break w-75' 
+                            onChange={e => {setTask(e.target.value);
+                                setValues({...values, task: e.target.value});
+                            }}
+                        />
+                        <button type='submit' className='btn btn-outline-success'>
+                            {isEdit ? 'Update' : 'Add'}
+                        </button>
+                    </form>
+        
+                    {/* error message */}
+                    <div>
+                        {errValidation && (
+                        <div className='text-danger ms-3' style={{ whiteSpace: 'pre-wrap' }}>
+                            {errValidation}
+                        </div>
+                        )}
+                    </div>
+                    
+                    <table className='table'>
+                        <colgroup>
+                            <col style={{ width: '10%' }} />
+                            <col style={{ width: '65%' }} />
+                            <col style={{ width: '25%' }} />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th></th>
                             </tr>
-                        })}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {todos?.map((tbTodo, index) => {
+                                return <tr key={index}>
+                                    <td>
+                                        <label>
+                                            <input type='checkbox' checked={tbTodo.fg_done} readOnly onChange={(event) => handleTodoDone(event, tbTodo.id_task, tbTodo.fg_done)} />
+                                        </label>
+                                    </td>
+                                    <td className={`${tbTodo.fg_done ? 'text-decoration-line-through' : ''}`}>
+                                        <div className='text-break'>
+                                            {tbTodo.task}
+                                        </div>
+                                    </td>
+                                    <td className='align-middle text-center'>
+                                        <div className='align-items-end justify-content-center'>
+                                            <span className='text-primary me-3' style={{ cursor: 'pointer' }} 
+                                                onClick={(event) => handleEdit(event, tbTodo.id_task, tbTodo.task)}>
+                                                Edit
+                                            </span>
+                                            <span onClick={() => handleDelete(tbTodo.id_task)} className='text-danger' style={{ cursor: 'pointer' }} >
+                                                Delete
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            })}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     )

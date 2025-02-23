@@ -2,6 +2,8 @@ import db from '../db.js';
 import { v4 as uuidv4 } from 'uuid';
 import { getChildParty } from './childController.js';
 import { deleteTodoByParty } from './todoController.js';
+import { deleteShoppingByParty } from './shoppingController.js';
+import { deleteGuestByParty } from './guestController.js';
 
 
 // insert party
@@ -81,6 +83,8 @@ export const deleteParty =async  (req, res) => {
   try {
     // delete todos by partyID
     await deleteTodoByParty(partyId);
+    await deleteShoppingByParty(partyId);
+    await deleteGuestByParty(partyId);
 
     const sql = 'DELETE FROM TB_PARTY WHERE id_party = ?;';
 

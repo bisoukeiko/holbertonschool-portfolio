@@ -14,11 +14,15 @@ function Shopping({ partyId }) {
     const [updateId, setUpdateID] = useState(null);
     const [errValidation, setErrValidation] = useState([]);
 
+
     useEffect(()=> {
-        axios.get(`http://localhost:5000/shopping/select`, {params: { partyId: partyId }})
-        .then(res => setShopItems(res.data))
-        .catch(err => console.log(err));
+        if (partyId) {
+            axios.get(`http://localhost:5000/shopping/select`, {params: { partyId: partyId }})
+            .then(res => setShopItems(res.data))
+            .catch(err => console.log(err));
+        }
     }, [partyId])
+
 
     // addボタン押下
     const handleAdd = (e) => {
@@ -109,75 +113,80 @@ function Shopping({ partyId }) {
 
     return (
         <div className='d-flex w-100 justify-content-center mt-3'>
-            <div className='card w-100 p-4 m-3'>
-                <h3>Shopping List</h3>
-                <form className="d-flex gap-2" onSubmit={isEdit ? handleUpdate : handleAdd}>
-                    <label htmlFor="item" className="visually-hidden">itemValue</label>
-                    <input 
-                        id='item'
-                        type='text'
-                        value={itemValue}
-                        placeholder='Enter the item'
-                        className='form-control text-break' 
-                        onChange={e => {setItemValue(e.target.value);
-                            setValues({...values, valueItem: e.target.value});
-                        }}
-                    />
-                    <button type='submit' className='btn btn-outline-success'>
-                        {isEdit ? 'Update' : 'Add'}
-                    </button>
-                </form>
-    
-                {/* error message */}
-                <div>
-                    {errValidation && (
-                    <div className='text-danger ms-3' style={{ whiteSpace: 'pre-wrap' }}>
-                        {errValidation}
-                    </div>
-                    )}
+            <div className='card w-100 m-3'>
+                <div className='card-header'>
+                    <h4 className='p-1'>Shopping List</h4>
                 </div>
-                
-                <table className='table'>
-                    <colgroup>
-                        <col style={{ width: '5%' }} />
-                        <col style={{ width: '70%' }} />
-                        <col style={{ width: '25%' }} />
-                    </colgroup>
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {shopItems?.map((tbShop, index) => {
-                            return <tr key={index}>
-                                <td>
-                                    <label>
-                                        <input type='checkbox' checked={tbShop.shop_fg_done} readOnly onChange={(event) => handleDone(event, tbShop.id_item, tbShop.shop_fg_done)} />
-                                    </label>
-                                </td>
-                                <td className={`${tbShop.shop_fg_done ? 'text-decoration-line-through' : ''}`}>
-                                    <div className='text-break'>
-                                        {tbShop.shop_item}
-                                    </div>
-                                </td>
-                                <td className='align-middle text-center'>
-                                    <div className='align-items-end justify-content-center'>
-                                        <span className='text-primary me-3' style={{ cursor: 'pointer' }} 
-                                            onClick={(event) => handleEdit(event, tbShop.id_item, tbShop.shop_item)}>
-                                            Edit
-                                        </span>
-                                        <span onClick={() => handleDelete(tbShop.id_item)} className='text-danger' style={{ cursor: 'pointer' }} >
-                                            Delete
-                                        </span>
-                                    </div>
-                                </td>
+                <div className='card-body p-3'>
+
+                    <form className="d-flex gap-2" onSubmit={isEdit ? handleUpdate : handleAdd}>
+                        <label htmlFor="item" className="visually-hidden">itemValue</label>
+                        <input 
+                            id='item'
+                            type='text'
+                            value={itemValue}
+                            placeholder='Enter the item'
+                            className='form-control text-break w-75' 
+                            onChange={e => {setItemValue(e.target.value);
+                                setValues({...values, valueItem: e.target.value});
+                            }}
+                        />
+                        <button type='submit' className='btn btn-outline-success'>
+                            {isEdit ? 'Update' : 'Add'}
+                        </button>
+                    </form>
+        
+                    {/* error message */}
+                    <div>
+                        {errValidation && (
+                        <div className='text-danger ms-3' style={{ whiteSpace: 'pre-wrap' }}>
+                            {errValidation}
+                        </div>
+                        )}
+                    </div>
+                    
+                    <table className='table'>
+                        <colgroup>
+                            <col style={{ width: '10%' }} />
+                            <col style={{ width: '65%' }} />
+                            <col style={{ width: '25%' }} />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th></th>
                             </tr>
-                        })}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {shopItems?.map((tbShop, index) => {
+                                return <tr key={index}>
+                                    <td>
+                                        <label>
+                                            <input type='checkbox' checked={tbShop.shop_fg_done} readOnly onChange={(event) => handleDone(event, tbShop.id_item, tbShop.shop_fg_done)} />
+                                        </label>
+                                    </td>
+                                    <td className={`${tbShop.shop_fg_done ? 'text-decoration-line-through' : ''}`}>
+                                        <div className='text-break'>
+                                            {tbShop.shop_item}
+                                        </div>
+                                    </td>
+                                    <td className='align-middle text-center'>
+                                        <div className='align-items-end justify-content-center'>
+                                            <span className='text-primary me-3' style={{ cursor: 'pointer' }} 
+                                                onClick={(event) => handleEdit(event, tbShop.id_item, tbShop.shop_item)}>
+                                                Edit
+                                            </span>
+                                            <span onClick={() => handleDelete(tbShop.id_item)} className='text-danger' style={{ cursor: 'pointer' }} >
+                                                Delete
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            })}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     )

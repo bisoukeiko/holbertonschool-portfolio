@@ -1,0 +1,75 @@
+class GuestValidator {
+    constructor(guestName, guestRelation, guestAllergy, otherInfo, parentPhone, parentEmail) {
+        this.guestName = guestName;
+        this.guestRelation = guestRelation;
+        this.guestAllergy = guestAllergy;
+        this.otherInfo = otherInfo;
+        this.parentPhone = parentPhone;
+        this.parentEmail = parentEmail;
+        this.errors = [];
+    }
+
+    validateGuestName() {
+        if (!this.guestName || this.guestName.trim() === '') {
+            this.errors.push('Guest name is required.')
+        } else if (this.guestName.length > 50 ) {
+            this.errors.push('Guest name must be less than 50 letters.')
+        } 
+    }
+
+    validateGuestRelation() {
+        if (this.guestRelation && this.guestRelation.length > 50) {
+            this.errors.push('Relation must be less than 50 letters.')
+        }
+    }
+
+    validateGuestAllergy() {
+        if (this.guestAllergy && this.guestAllergy.length > 200) {
+            this.errors.push('Guest Allergy must be less than 200 letters.')
+        }
+    }
+
+    validateOtherInfo() {
+        if (this.otherInfo && this.otherInfo.length > 200) {
+            this.errors.push('Other information must be less than 200 letters.')
+        }
+    }
+
+    validateGusetPhone() {
+        const phoneRegex = /^\d{10}$/;
+        // remove -, space
+        const phoneReplace = this.parentPhone?.replace(/[-\s]/g, '');
+
+        if (!this.parentPhone || this.parentPhone.trim() === '') {
+            this.errors.push('Parents phone numbre is required.')
+        } else if (!phoneRegex.test(phoneReplace)) {
+            this.errors.push('Please enter a valid telephone numbre.');
+        }
+    }
+
+    validateGuestEmail() {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (this.parentEmail && !emailRegex.test(this.parentEmail)) {
+            this.errors.push('Please enter a valid email address.')
+        }
+    }
+
+
+    validate() {
+        this.errors = [];
+        this.validateGuestName();
+        this.validateGuestRelation();
+        this.validateGuestAllergy();
+        this.validateOtherInfo();
+        this.validateGusetPhone();
+        this.validateGuestEmail();
+
+        return this.errors.length === 0;
+    }
+
+    getErrors() {
+        return this.errors;
+    }
+}
+
+export default GuestValidator;

@@ -126,12 +126,12 @@ function Shopping({ partyId }) {
                             type='text'
                             value={itemValue}
                             placeholder='Enter the item'
-                            className='form-control text-break w-75' 
+                            className='form-control text-break' 
                             onChange={e => {setItemValue(e.target.value);
                                 setValues({...values, valueItem: e.target.value});
                             }}
                         />
-                        <button type='submit' className='btn btn-outline-success'>
+                        <button type='submit' className='btn btn-outline-success btn-sm'>
                             {isEdit ? 'Update' : 'Add'}
                         </button>
                     </form>

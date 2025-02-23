@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useUser } from './UserContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import {Dropdown, Form } from 'react-bootstrap';
 
 function Child() {
     const { userId } = useUser();
     const navigate = useNavigate();
 
     const [isAdd, setIsAdd] = useState(false);
+    const [errValidationChild, setErrValidationChild] = useState([]);
+
     const [childList, setChildList] = useState([]);
     const [values, setValues] = useState({
         childId: '',
@@ -63,11 +66,23 @@ function Child() {
       ));  
     }
 
+    const handleCancel = () => {
+      setValues({
+          childId: '',
+          id_parent: userId,
+          child_name: '',
+          child_birthday: '',
+          child_parties: []
+      });
+      setIsAdd(false);
+    }
+
     const handleAdd = (event) => {
       event.preventDefault();
-      // console.log("Adding child with values:", values);
+      setErrValidationChild([]);
+      console.log("Adding child with valueChild:", values);
       if (!values.child_name) {
-        return;
+          setErrValidationChild(['Child name is required.']);
       } else {
           axios.post('http://localhost:5000/child/insert', values)
           .then(res => {
@@ -82,7 +97,14 @@ function Child() {
             });
             setIsAdd(false);
           })
-          .catch(err => console.log(err));
+          .catch((err) => {
+            if (err.response && err.response.data.errors) {
+              setErrValidationChild(err.response.data.errors.join('\n'));
+              console.log('validerr:',  err.response.data.errors);
+            } else {
+              console.error("Error insert child:", err);
+            }
+        })
       }
     }
 
@@ -129,27 +151,46 @@ function Child() {
 
     <div className='d-flex min-vh-100 flex-column align-items-center mt-1'>
       <div className='w-100  rounded p-3'>
-        {/* add nwe child */}
+        {/* add new child */}
         {isAdd && (
           <form>
+
+            {/* error message */}
+            <div>
+                {errValidationChild && (
+                    <div className='text-danger mb-2 ms-2' style={{ whiteSpace: 'pre-wrap' }}>
+                        {errValidationChild}
+                    </div>
+                )}
+            </div>
+
             <div className='card mb-2'>
               <div className='card-header mb-2'>
                 <div className='d-flex align-items-center'>
                   <label className='me-2'></label>
-                  <input type='text' placeholder='Name' className='form-control fs-5' value={values.child_name}
+                  <input type='text' placeholder='Child name' className='form-control' value={values.child_name}
                         onChange={event => setValues({...values, 'child_name': event.target.value})} required/>
                 </div>
               </div>
               <div className='card-body flex-grow-1'>
                 <div className='mb-2'>
-                  <div className='d-flex align-items-center'>
-                    <label className='me-2'>Birthday:</label>
-                    <input type='text' placeholder='YYYY-MM-DD'className='form-control fs-5' value={values.child_birthday}
-                        onChange={event => setValues({...values, 'child_birthday': event.target.value})} required/>
+                  <div>
+                      <Form.Group>
+                          <Form.Label>Birthday:</Form.Label>
+                          <Form.Control
+                              type='date'
+                              value={values.child_birthday}
+                              onChange={event => (setValues({...values, 'child_birthday': event.target.value}))}
+                              required
+                          />
+                      </Form.Group>
                   </div>
                 </div>
                 <div className='d-flex justify-content-end'>
-                <button onClick={  handleAdd } className='btn btn-outline-secondary btn-sm'>
+                <span onClick={handleCancel} className='text-danger mt-3 me-3'  style={{ cursor: 'pointer' }}>
+                    Cancel addition
+                </span>
+                <button onClick={  handleAdd } className='btn btn-outline-success mt-2'>
                   Add
                 </button>
               </div>
@@ -159,7 +200,7 @@ function Child() {
         )}
         <div className='d-flex justify-content-end'>
           {!isAdd && (
-            <button onClick={() => setIsAdd(true)} className='btn btn-light btn-sm fs-6 text m-2'> + Add a child</button>
+            <button onClick={() => setIsAdd(true)} className='btn btn-outline-success mb-2 me1'> + Add a new child</button>
           )}
         </div>
 
@@ -182,13 +223,19 @@ function Child() {
 
 
                 {/* child birthday */}
-                {childData.isEdit ? (
-                  <div>                  
-                    <label className='me-3' htmlFor='childbirthday'>Birthday</label>
-                    <input id='childbirthday' type='text' placeholder='YYYY-MM-DD'className='form-control' value={childData.child_birthday}
-                           onChange={event => handleChange(childData.id_child, 'child_birthday', event.target.value)} required/>
-                  </div>
-                  ) : ( 
+                {childData.isEdit ? (            
+                    <div>
+                        <Form.Group>
+                            <Form.Label>Birthday:</Form.Label>
+                            <Form.Control
+                                type='date'
+                                value={childData.child_birthday}
+                                onChange={event => handleChange(childData.id_child, 'child_birthday', event.target.value)}
+                                required
+                            />
+                        </Form.Group>
+                    </div>
+                ) : ( 
                     <div>Birthday: {childData.child_birthday}</div>
                 )}
 
@@ -202,6 +249,9 @@ function Child() {
                     <span onClick={ () => handleDelete(childData.id_child)} className='text-danger' style={{ cursor: 'pointer' }} >
                         Delete
                     </span>
+                    {/* <span onClick={handleCancel} className='text-danger ms-2' style={{ cursor: 'pointer' }} >
+                        Cancel
+                    </span> */}
                 </div>
               </div>
 
@@ -211,16 +261,24 @@ function Child() {
                       <ul className='list-unstyled'>
                           {childData.child_parties.map((partyData) => (
                               <li key = {partyData.idParty} >
-                                  <p style={{ cursor: 'pointer' }} onClick={() => navigate('/party', { state: { childList, partyData } })}>
+                                  <p  className='text-dark cursor-pointer ms-3' 
+                                      style={{ cursor: 'pointer' }} 
+                                      onClick={() => navigate('/party', { state: { childList, partyData } })}
+                                      onMouseEnter={(e) => e.target.classList.replace('text-dark', 'text-primary')}
+                                      onMouseLeave={(e) => e.target.classList.replace('text-primary', 'text-dark')}>
                                     {partyData.childYears} years old
                                   </p>
                               </li>
                           ))}
                       </ul>
                   ):(
-                      <p>No parties registered</p>
+                      <p className='ms-3'>No parties registered</p>
                   )}
               </div>
+              <span className='text-end text-success me-3 mb-3'style={{ cursor: 'pointer' }}
+                    onClick={() => navigate('/party', { state: { childList, partyData: {} }})}>
+                  + add a new party
+              </span>
             </div>
           ))
         }

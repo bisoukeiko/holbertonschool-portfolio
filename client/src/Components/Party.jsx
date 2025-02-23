@@ -5,6 +5,7 @@ import axios from 'axios';
 import {Dropdown, Form } from 'react-bootstrap';
 import Todo from './Todo';
 import Shopping from './Shopping';
+import Guest from './Guest';
 
 
 function Party() {
@@ -14,10 +15,13 @@ function Party() {
     const childList = location.state?.childList || [];
     const partyData = location.state?.partyData || {};
 
+    const [childListCopy, setChildListCopy] = useState(childList);
     const [selectedChildName, setSelectedChildName] = useState(''); // dropdown child name
     const [selectedChildId, setSelectedChildId] = useState(''); // dropdown child id
+    const [selectedChildPhone, setSelectedChildPhone] = useState('');
     const [selectedYear, setSelectedYear] = useState('');// dropdown year
     const [selectedParty, setSelectedParty] = useState('');// dropdown year choise -> party id set
+    // const [prevParty, setPrevParty] = useState('');
     const [yearList, setYearList] = useState([]); 
     const [partyList, setPartyList] = useState([]);
     const [noPartiesMsg, setNoPartiesMsg] = useState(''); 
@@ -35,20 +39,27 @@ function Party() {
         userPhone: ''
     });
 
+    const [valueChild, setValueChild] = useState({
+        id_parent: userId,
+        child_name: '',
+        child_birthday: ''
+    });
+
     const [isAdd, setIsAdd] = useState(false);
-
-
+    const [isAddChild, setIsAddChild] = useState(false);
+    const [errValidationChild, setErrValidationChild] = useState([]);
 
     useEffect(() => {
         if (selectedParty) {
             setSelectedParty(selectedParty);
         } else {
             if (!selectedChildName) {
-                setSelectedParty(partyData.idParty);
-                setSelectedChildName(partyData.childName);
-                setSelectedChildId(partyData.idChild);
-                setSelectedYear(partyData.childYears);
-                const selectedChildData = childList.find(child => child.id_child === partyData.idChild);
+                setSelectedParty(partyData.idParty || '');
+                setSelectedChildName(partyData.childName || '');
+                setSelectedChildId(partyData.idChild || '');
+                setSelectedChildPhone(partyData.userPhone || '');
+                setSelectedYear(partyData.childYears || '');
+                const selectedChildData = childListCopy.find(child => child.id_child === partyData.idChild);
                 const parties = selectedChildData.child_parties.map(party => ({...party, isEdit: false}));
                 setYearList(selectedChildData.child_parties);
                 setPartyList(parties);
@@ -60,6 +71,7 @@ function Party() {
     const handleSelect = (childData) => {
         setSelectedChildName(childData.child_name);
         setSelectedChildId(childData.id_child);
+        setSelectedChildPhone(childData.userPhone);
 
         if (childData.child_parties && childData.child_parties.length > 0) {
             setYearList(childData.child_parties);
@@ -122,6 +134,7 @@ function Party() {
 
         setIsAdd(false);
         setSelectedYear('');
+        setSelectedParty('');
     }
 
     const handleAdd = (event) => {
@@ -156,12 +169,52 @@ function Party() {
                     });
 
                 setIsAdd(false);
-                // setSelectedParty('');
-                // setSelectedYear('');
             })
             .catch(err => console.log(err));
 
     }
+
+
+    const handleCancelChild = () => {
+        setValueChild({
+            id_parent: userId,
+            child_name: '',
+            child_birthday: ''
+        });
+        setIsAddChild(false);
+        setErrValidationChild([]);
+    }
+
+    const handleAddChild = (event) => {
+        event.preventDefault();
+        setErrValidationChild([]);
+        // console.log("Adding child with valueChild:", valueChild);
+        if (!valueChild.child_name) {
+            setErrValidationChild(['Child name is required.']);
+        } else {
+            axios.post('http://localhost:5000/child/insert', {...valueChild, id_parent: userId})
+            .then(res => {
+              const childData = res.data.parties.map(child => ({...child, isEdit: false}));
+              setChildListCopy(childData);
+
+              setValueChild([]);
+              setIsAddChild(false);
+              setErrValidationChild([]);
+            })
+            .catch((err) => {
+                if (err.response && err.response.data.errors) {
+                  setErrValidationChild(err.response.data.errors.join('\n'));
+                  console.log('validerr:',  err.response.data.errors);
+                } else {
+                  console.error("Error insert child:", err);
+                }
+            })
+        }
+
+    }
+
+
+
 
     const handleUpdate = (event, partyId) => {
         event.preventDefault();
@@ -194,7 +247,7 @@ function Party() {
 
     const handleDelete = (event, partyId) => {
         event.preventDefault();
-
+        console.log('delete party party id: ', partyId);
         const isConfirmed = confirm('Your guest list, ToDo list, shopping list and invitations will also be deleted.');
 
         if(isConfirmed) {
@@ -231,14 +284,29 @@ function Party() {
       <div className='container mt-5'> 
         <div className='row'>
             <div className='col'>
+
+                {/* button add new child */}
+                <div className=''>
+                    {!isAddChild && (
+                        <button onClick={() => {setIsAddChild(true); setNoPartiesMsg('');}} className='btn btn-outline-success btn-sm fs-6 text ms-4 m-2 p-2'
+                            style={{ width: '200px' }}>
+                            + Add a new child
+                        </button>
+                    )}
+                </div>
+            </div>
+        </div>
+        <div className='row'>
+            <div className='col'>
+                {/* dropdown select child, year */}
                 <div className='d-flex justify-content-center'>
                     <Dropdown className='me-4'>
-                        <Dropdown.Toggle variant='light' id='dropdown-basic' style={{ width: '200px' }}>
+                        <Dropdown.Toggle variant='light border' id='dropdown-basic' style={{ width: '200px' }}>
                             {selectedChildName || 'Select Child'}
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu  style={{ width: '200px' }}>
-                            {childList.map((child) => (
+                            {childListCopy.map((child) => (
                                 <Dropdown.Item 
                                     key={child.id_child} 
                                     onClick={() => handleSelect(child)}>
@@ -249,7 +317,7 @@ function Party() {
                     </Dropdown>
 
                     <Dropdown>
-                        <Dropdown.Toggle variant='light' id='dropdown-basic' style={{ width: '200px' }}>
+                        <Dropdown.Toggle variant='light border' id='dropdown-basic' style={{ width: '200px' }}>
                             {selectedYear ? `${selectedYear} years old` : 'Select year'}
                         </Dropdown.Toggle>
 
@@ -267,19 +335,24 @@ function Party() {
             </div>
         </div>
         <div className='row'>
-            {/* Add button */}
+            {/* button add new party */}
             <div className='mt-3'>
-                    {isAdd ? (
-                        <button onClick={handleCancel} className='btn btn-outline-danger btn-sm text ms-4 p-2'
-                                style={{ width: '150px' }}>
-                            Cancel addition
-                        </button>
-                    ) : (
-                        <button onClick={() => setIsAdd(true)} className='btn btn-light btn-sm fs-5 text ms-4 p-3'
-                                style={{ width: '200px' }}>
-                            + Add a new party
-                        </button>
-                    )}
+                {!isAddChild && (
+                    <div>
+                        {isAdd ? (
+                            <button onClick={handleCancel} className='btn btn-outline-danger btn-sm text ms-4 p-2'
+                                    style={{ width: '150px' }}>
+                                Cancel addition
+                            </button>
+                        ) : (
+                            <button onClick={() => {setIsAdd(true); setNoPartiesMsg('');} }
+                                    className='btn btn-outline-success btn-sm fs-5 text ms-4 mb-3 p-2'
+                                    style={{ width: '200px' }}>
+                                + Add a new party
+                            </button>
+                        )}
+                        </div>
+                )}
             </div>
         </div>
 
@@ -294,195 +367,276 @@ function Party() {
                 </div>
             </div>
         ) : (
-            <div className='container mt-4'> 
+            <div className='container mt-3'> 
                 <div className='row  g-0'>
-                    <div className='col-md-4'> {/* 画面幅の半分を使用 */}
+                    <div className='col-md-3'>
 
                         <div className='d-flex flex-column mt-1'>
                             <div  className='w-100 bg-white rounded p-3 '>
-                                {/* new party form */}
-                                {isAdd ? (
-                                    <div className='card mb-2'>
-                                        <div className='card-header p-3'>
+
+                                {/* add new child card*/}
+                                {isAddChild ? (
+                                    <form>
+
+                                        {/* error message */}
+                                        <div>
+                                            {errValidationChild && (
+                                                <div className='text-danger mb-2 ms-2' style={{ whiteSpace: 'pre-wrap' }}>
+                                                    {errValidationChild}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className='card mb-2'>
+                                        <div className='card-header mb-2'>
+
                                             <div className='d-flex flex-column'>
-
-                                                {/* dropdown child name */}
-                                                <Dropdown className='me-4 d-flex justify-content-center'>
-                                                    <Dropdown.Toggle variant='light' id='dropdown-basic'className='fs-5' style={{ width: '200px' }}>
-                                                        {selectedChildName || 'Select Child'}
-                                                    </Dropdown.Toggle>
-
-                                                    <Dropdown.Menu  style={{ width: '200px' }}>
-                                                        {childList.map((child) => (
-                                                            <Dropdown.Item 
-                                                                key={child.id_child} 
-                                                                onClick={() => handleSelect(child)}>
-                                                                {child.child_name}
-                                                            </Dropdown.Item>
-                                                        ))}
-                                                    </Dropdown.Menu>
-                                                </Dropdown>
-
+                                            <label className='me-2'>Child name:</label>
+                                            <input type='text' placeholder='Child name' className='form-control' value={valueChild.child_name}
+                                                    onChange={event => setValueChild({...valueChild, 'child_name': event.target.value})} required/>
                                             </div>
                                         </div>
                                         <div className='card-body flex-grow-1'>
-                                            <div>
-                                                <Form.Group>
-                                                    <Form.Label>Date:</Form.Label>
-                                                    <Form.Control
-                                                        type='date'
-                                                        value={partyValue.partyDate}
-                                                        onChange={event => handleChange(selectedParty, 'partyDate', event.target.value)}
-                                                    />
-                                                    <Form.Label className='mt-2'>From:</Form.Label>
-                                                    <Form.Select
-                                                        type='time'
-                                                        value={partyValue.partyTimeFrom}
-                                                        onChange={(event) => handleChange(selectedParty, 'partyTimeFrom', event.target.value)}
-                                                    >
-                                                        {[...Array(24)].map((_, hour) => (
-                                                            [...Array(4)].map((_, min) => {
-                                                                const time = `${String(hour).padStart(2, '0')}:${String(min * 15).padStart(2, '0')}`;
-                                                                return <option key={time} value={time}>{time}</option>;
-                                                            })
-                                                        ))}
-                                                    </Form.Select>
+                                            <div className='mb-2'>
 
-                                                    <Form.Label className='mt-2'>To:</Form.Label>
-                                                    <Form.Select
-                                                        type='time'
-                                                        value={partyValue.partyTimeTo}
-                                                        onChange={(event) => handleChange(selectedParty, 'partyTimeTo', event.target.value)}
-                                                    >
-                                                        {[...Array(24)].map((_, hour) => (
-                                                            [...Array(4)].map((_, min) => {
-                                                                const time = `${String(hour).padStart(2, '0')}:${String(min * 15).padStart(2, '0')}`;
-                                                                return <option key={time} value={time}>{time}</option>;
-                                                            })
-                                                        ))}
-                                                    </Form.Select>
-                                                </Form.Group>
+                                            <Form.Group>
+                                                <Form.Label>Birthday:</Form.Label>
+                                                <Form.Control
+                                                    type='date'
+                                                    value={valueChild.child_birthday}
+                                                    onChange={event => (setValueChild({...valueChild, 'child_birthday': event.target.value}))}
+                                                    required
+                                                />
+                                            </Form.Group>
 
-                                                
-                                                <label  className='mt-2' htmlFor='partyPlace'>Place: </label>
-                                                <input id='partyPlace' type='text' placeholder=''className='form-control' value={partyValue.partyPlace}
-                                                    onChange={event => handleChange(selectedParty, 'partyPlace', event.target.value)} />
-
-                                                <label  className='mt-2' htmlFor='partyContact1'>Contact1: </label>
-                                                <input id='partyContact1' type='text' placeholder=''className='form-control' value={partyValue.partyContact1}
-                                                    onChange={event => handleChange(selectedParty, 'partyContact1', event.target.value)} />
-
-                                                <label  className='mt-2' htmlFor='partyContact2'>Contact2: </label>
-                                                <input id='partyContact2' type='text' placeholder=''className='form-control' value={partyValue.partyContact2}
-                                                    onChange={event => handleChange(selectedParty, 'partyContact2', event.target.value)} />
                                             </div>
                                             <div className='d-flex justify-content-end'>
-                                                <button onClick={ handleAdd } className='btn btn-outline-secondary btn-sm mt-3'>
-                                                    Add
-                                                </button>
-                                            </div>
+                                            <span onClick={handleCancelChild} className='text-danger btn-sm ms-4 p-2'
+                                                    style={{ width: '150px' }}>
+                                                Cancel addition
+                                            </span>
+                                            <button onClick={  handleAddChild } className='btn btn-outline-success btn-sm'>
+                                                Add
+                                            </button>
                                         </div>
-                                    </div>
+                                        </div>
+                                        </div>
+                                    </form>
                                 ) : (
+
                                     <div>
-                                        {/* Party Cards */}
-                                        {partyList
-                                            ?.filter((partyInfo) => !selectedYear || partyInfo.idParty === selectedParty)
-                                            .map((partyInfo) => (
-                                                <div className='card mb-2'>
-                                                    <div className='card-header p-3'>
-                                                        <div className='d-flex flex-column'>
-                                                            <div className='fs-5'>{partyInfo.childName}</div>
-                                                            <div className='fs-5 d-flex justify-content-center'>{partyInfo.childYears} years old</div>
-                                                        </div>
+                                        {/* new party form */}
+                                        {isAdd ? (
+                                            <div className='card mb-2'>
+                                                <div className='card-header p-3'>
+                                                    <div className='d-flex flex-column'>
+
+
+                                                        {/* dropdown child name */}
+                                                        <Dropdown className='d-flex justify-content-center'>
+                                                            <Dropdown.Toggle variant='light border' id='dropdown-basic'className='fs-5' style={{ width: '200px' }}>
+                                                                {selectedChildName || 'Select Child'}
+                                                            </Dropdown.Toggle>
+
+                                                            <Dropdown.Menu  style={{ width: '200px' }}>
+                                                                {childListCopy.map((child) => (
+                                                                    <Dropdown.Item 
+                                                                        key={child.id_child} 
+                                                                        onClick={() => handleSelect(child)}>
+                                                                        {child.child_name}
+                                                                    </Dropdown.Item>
+                                                                ))}
+                                                            </Dropdown.Menu>
+                                                        </Dropdown>
+
                                                     </div>
-                                                    <div className='card-body flex-grow-1'>
-                                                        
-                                                        {/* Edit party */}
-                                                        {partyInfo.isEdit ? (
-                                                            <div>
-                                                                <Form.Group>
-                                                                    <Form.Label>Date:</Form.Label>
-                                                                    <Form.Control
-                                                                        type='date'
-                                                                        value={partyInfo.partyDate}
-                                                                        onChange={event => handleChange(partyInfo.idParty, 'partyDate', event.target.value)}
-                                                                    />
-                                                                    <Form.Label>From:</Form.Label>
-                                                                    <Form.Select
-                                                                        type='time'
-                                                                        value={partyInfo.partyTimeFrom}
-                                                                        onChange={(event) => handleChange(partyInfo.idParty, 'partyTimeFrom', event.target.value)}
-                                                                    >
-                                                                        {[...Array(24)].map((_, hour) => (
-                                                                            [...Array(4)].map((_, min) => {
-                                                                                const time = `${String(hour).padStart(2, '0')}:${String(min * 15).padStart(2, '0')}`;
-                                                                                return <option key={time} value={time}>{time}</option>;
-                                                                            })
-                                                                        ))}
-                                                                    </Form.Select>
-
-                                                                    <Form.Label>To:</Form.Label>
-                                                                    <Form.Select
-                                                                        type='time'
-                                                                        value={partyInfo.partyTimeTo}
-                                                                        onChange={(event) => handleChange(partyInfo.idParty, 'partyTimeTo', event.target.value)}
-                                                                    >
-                                                                        {[...Array(24)].map((_, hour) => (
-                                                                            [...Array(4)].map((_, min) => {
-                                                                                const time = `${String(hour).padStart(2, '0')}:${String(min * 15).padStart(2, '0')}`;
-                                                                                return <option key={time} value={time}>{time}</option>;
-                                                                            })
-                                                                        ))}
-                                                                    </Form.Select>
-                                                                </Form.Group>
-
-                                                                
-                                                                <label className='me-3' htmlFor='partyPlace'>Place: </label>
-                                                                <input id='partyPlace' type='text' placeholder=''className='form-control' value={partyInfo.partyPlace}
-                                                                    onChange={event => handleChange(partyInfo.idParty, 'partyPlace', event.target.value)} />
-
-                                                                <label className='me-3' htmlFor='partyContact1'>Contact1: </label>
-                                                                <input id='partyContact1' type='text' placeholder=''className='form-control' value={partyInfo.partyContact1}
-                                                                    onChange={event => handleChange(partyInfo.idParty, 'partyContact1', event.target.value)} />
-
-                                                                <label className='me-3' htmlFor='partyContact2'>Contact2: </label>
-                                                                <input id='partyContact2' type='text' placeholder=''className='form-control' value={partyInfo.partyContact2}
-                                                                    onChange={event => handleChange(partyInfo.idParty, 'partyContact2', event.target.value)} />
-                                                            </div>
-                                                        ) : (
-                                                            <div>
-                                                                <p>Date: {partyInfo.partyDate}</p>
-                                                                <p>From {partyInfo.partyTimeFrom} To {partyInfo.partyTimeTo}</p>
-                                                                <p>Place: {partyInfo.partyPlace}</p>
-                                                                <p>contact1: {partyInfo.partyContact1}</p>
-                                                                <p>contact2: {partyInfo.partyContact2}</p>
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-                                                    {/* Edit Delete */}
-                                                    <div className='d-flex justify-content-end mb-2'>
-                                                        <span className='text-primary me-2' style={{ cursor: 'pointer' }} 
-                                                            onClick={ (event) => {
-                                                                partyInfo.isEdit ? handleUpdate(event, partyInfo.idParty) : handleEdit(event,partyInfo.idParty);}}>
-                                                            {partyInfo.isEdit ? 'Update' : 'Edit'}
-                                                        </span>
-                                                        <span onClick={(event) => handleDelete(event, partyInfo.idParty)} className='text-danger me-3' style={{ cursor: 'pointer' }} >
-                                                            Delete
-                                                        </span>
-                                                    </div>
-
                                                 </div>
-                                        ))}
-                                    </div>
+                                                <div className='card-body flex-grow-1'>
+                                                    <div>
+                                                        <Form.Group>
+                                                            <Form.Label>Date:</Form.Label>
+                                                            <Form.Control
+                                                                type='date'
+                                                                value={partyValue.partyDate || new Date().toISOString().split('T')[0]}
+                                                                onChange={event => handleChange(selectedParty, 'partyDate', event.target.value)}
+                                                            />
+                                                            <Form.Label className='mt-2'>From:</Form.Label>
+                                                            <Form.Select
+                                                                type='time'
+                                                                value={partyValue.partyTimeFrom || '14:00'}
+                                                                onChange={(event) => handleChange(selectedParty, 'partyTimeFrom', event.target.value)}
+                                                            >
+                                                                {[...Array(24)].map((_, hour) => (
+                                                                    [...Array(4)].map((_, min) => {
+                                                                        const time = `${String(hour).padStart(2, '0')}:${String(min * 15).padStart(2, '0')}`;
+                                                                        return <option key={time} value={time}>{time}</option>;
+                                                                    })
+                                                                ))}
+                                                            </Form.Select>
+
+                                                            <Form.Label className='mt-2'>To:</Form.Label>
+                                                            <Form.Select
+                                                                type='time'
+                                                                value={partyValue.partyTimeTo || '17:00'}
+                                                                onChange={(event) => handleChange(selectedParty, 'partyTimeTo', event.target.value)}
+                                                            >
+                                                                {[...Array(24)].map((_, hour) => (
+                                                                    [...Array(4)].map((_, min) => {
+                                                                        const time = `${String(hour).padStart(2, '0')}:${String(min * 15).padStart(2, '0')}`;
+                                                                        return <option key={time} value={time}>{time}</option>;
+                                                                    })
+                                                                ))}
+                                                            </Form.Select>
+                                                        </Form.Group>
+
+                                                        
+                                                        <label  className='mt-2' htmlFor='partyPlace'>Place: </label>
+                                                        <input id='partyPlace' type='text' placeholder=''className='form-control' value={partyValue.partyPlace}
+                                                            onChange={event => handleChange(selectedParty, 'partyPlace', event.target.value)} />
+
+                                                        <label  className='mt-2' htmlFor='partyContact1'>Contact1: </label>
+                                                        <input id='partyContact1' type='text' placeholder=''className='form-control' value={partyValue.partyContact1 || partyValue.userPhone}
+                                                            onChange={event => handleChange(selectedParty, 'partyContact1', event.target.value)} />
+
+                                                        <label  className='mt-2' htmlFor='partyContact2'>Contact2: </label>
+                                                        <input id='partyContact2' type='text' placeholder=''className='form-control' value={partyValue.partyContact2}
+                                                            onChange={event => handleChange(selectedParty, 'partyContact2', event.target.value)} />
+                                                    </div>
+                                                    <div className='d-flex justify-content-end'>
+
+                                                        <span onClick={handleCancel} className='text-danger mt-3 me-2 p-2'  style={{ cursor: 'pointer' }}>
+                                                            Cancel addition
+                                                        </span>
+
+                                                        <button onClick={ handleAdd } className='btn btn-outline-success mt-3'>
+                                                            Add
+                                                        </button>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div>
+                                                {/* Party Cards */}
+                                                {partyList
+                                                    ?.filter((partyInfo) => !selectedYear || partyInfo.idParty === selectedParty)
+                                                    .map((partyInfo) => (
+                                                        <div className='card mb-2'>
+                                                            <div className='card-header p-3'>
+                                                                <div className='d-flex justify-content-center align-items-end'>
+                                                                    <div className='fs-3 me-4'>{partyInfo.childName}</div>
+                                                                    <div className='fs-5'>{partyInfo.childYears} years old</div>
+                                                                </div>
+                                                            </div>
+                                                            <div className='card-body p-4'>
+                                                                
+                                                                {/* Edit party */}
+                                                                {partyInfo.isEdit ? (
+                                                                    <div>
+                                                                        <Form.Group>
+                                                                            <Form.Label className='mb-0'>Date:</Form.Label>
+                                                                            <Form.Control
+                                                                                type='date'
+                                                                                value={partyInfo.partyDate}
+                                                                                onChange={event => handleChange(partyInfo.idParty, 'partyDate', event.target.value)}
+                                                                            />
+                                                                            <Form.Label className='mt-1 mb-0'>From:</Form.Label>
+                                                                            <Form.Select
+                                                                                type='time'
+                                                                                value={partyInfo.partyTimeFrom}
+                                                                                onChange={(event) => handleChange(partyInfo.idParty, 'partyTimeFrom', event.target.value)}
+                                                                            >
+                                                                                {[...Array(24)].map((_, hour) => (
+                                                                                    [...Array(4)].map((_, min) => {
+                                                                                        const time = `${String(hour).padStart(2, '0')}:${String(min * 15).padStart(2, '0')}`;
+                                                                                        return <option key={time} value={time}>{time}</option>;
+                                                                                    })
+                                                                                ))}
+                                                                            </Form.Select>
+
+                                                                            <Form.Label className='mt-1 mb-0'>To:</Form.Label>
+                                                                            <Form.Select
+                                                                                type='time'
+                                                                                value={partyInfo.partyTimeTo}
+                                                                                onChange={(event) => handleChange(partyInfo.idParty, 'partyTimeTo', event.target.value)}
+                                                                            >
+                                                                                {[...Array(24)].map((_, hour) => (
+                                                                                    [...Array(4)].map((_, min) => {
+                                                                                        const time = `${String(hour).padStart(2, '0')}:${String(min * 15).padStart(2, '0')}`;
+                                                                                        return <option key={time} value={time}>{time}</option>;
+                                                                                    })
+                                                                                ))}
+                                                                            </Form.Select>
+                                                                        </Form.Group>
+
+                                                                        
+                                                                        <label className='me-3 mt-1' htmlFor='partyPlace'>Place: </label>
+                                                                        <input id='partyPlace' type='text' placeholder=''className='form-control' value={partyInfo.partyPlace}
+                                                                            onChange={event => handleChange(partyInfo.idParty, 'partyPlace', event.target.value)} />
+        {/* 
+                                                                        <label className='me-3 mt-1' htmlFor='partyContact1'>Contact1: </label>
+                                                                        <input id='partyContact1' type='text' placeholder=''className='form-control' value={partyInfo.partyContact1}
+                                                                            onChange={event => handleChange(partyInfo.idParty, 'partyContact1', event.target.value)} />
+
+                                                                        <label className='me-3 mt-1' htmlFor='partyContact2'>Contact2: </label>
+                                                                        <input id='partyContact2' type='text' placeholder=''className='form-control' value={partyInfo.partyContact2}
+                                                                            onChange={event => handleChange(partyInfo.idParty, 'partyContact2', event.target.value)} /> */}
+
+                                                                    </div>
+                                                                ) : (
+                                                                    <div>
+                                                                        <div>Date:</div>
+                                                                        <div className='fs-5 d-flex justify-content-center'> {partyInfo.partyDate}</div>
+                                                                        <div className='fs-6 d-flex justify-content-center'>{partyInfo.partyTimeFrom || <>&nbsp;</>} ~ {partyInfo.partyTimeTo}</div>
+                                                                        <div className='mt-1'>Place:</div>
+                                                                            <div className='fs-5 d-flex justify-content-center'>
+                                                                                {partyInfo.partyPlace || <>&nbsp;</>}
+                                                                            </div>
+                                                                        {/* <div className='mt-1'>Contact1:</div>
+                                                                        <div className='fs-5 d-flex justify-content-center'>
+                                                                            {partyInfo.partyContact1 || <>&nbsp;</>}
+                                                                        </div>
+                                                                        <div className='mt-1'>Contact2:</div>
+                                                                        <div className='fs-5 d-flex justify-content-center'>
+                                                                            {partyInfo.partyContact2 || <>&nbsp;</>}
+                                                                        </div> */}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+
+                                                            {/* Edit Delete */}
+                                                            <div className='d-flex justify-content-end mb-3 me-2'>
+                                                                <span className='text-primary me-3' style={{ cursor: 'pointer' }} 
+                                                                    onClick={ (event) => {
+                                                                        partyInfo.isEdit ? handleUpdate(event, partyInfo.idParty) : handleEdit(event,partyInfo.idParty);}}>
+                                                                    {partyInfo.isEdit ? 'Update' : 'Edit'}
+                                                                </span>
+                                                                <span onClick={(event) => handleDelete(event, partyInfo.idParty)} className='text-danger me-3' style={{ cursor: 'pointer' }} >
+                                                                    Delete
+                                                                </span>
+                                                            </div>
+
+                                                        </div>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                    </div>            
                                 )}
                             </div>
                         </div>
             
                     </div>
-                    <div className='col-md-6'>
-                        <div></div>
+                    <div className='col-md-9'>
+                            {!isAdd && (
+                                <div>
+                                    {selectedYear && (
+                                        <div>
+                                            <Guest partyId={selectedParty} childId={selectedChildId}/>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                     </div>
                 </div>
                 <div className='row g-0'>

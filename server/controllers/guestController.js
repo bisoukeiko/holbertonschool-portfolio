@@ -116,7 +116,7 @@ export const insertPartyGuest = (partyId, guestId) => {
                          fg_attend)
                     VALUES (?, ?, ?);`;
 
-    const values = [partyId, guestId, 0];
+    const values = [partyId, guestId, '0'];
 
     return new Promise((resolve, reject)=> {
         db.query(sql, values, (err, result) => {
@@ -147,7 +147,7 @@ export const updateGuest = (req, res) => {
                                       guest_allergy = ?,
                                       other_info = ?,
                                       parent_phone = ?,
-                                      parent_email= ? 
+                                      parent_email= ?
                                 WHERE id_guest=?;`;
     const id = req.params.id;
     const values = [guestName, guestRelation, guestAllergy, otherInfo, parentPhone, parentEmail, id];
@@ -157,31 +157,32 @@ export const updateGuest = (req, res) => {
         console.error("Database Error:", err);
         return res.status(500).json({Message: 'Error update todo', Error: err});
       } else {
-        // req.query.partyId = req.body.id_party;
-        // getGuestList(req, res);
-        return res.status(201).json(result);
+        req.query.partyId = partyId;
+        getGuestList(req, res);
       }
     });
 };
 
 
-// export const updateGuestFlag = (req, res) => {
-//     const sql = 'UPDATE TB_TODO SET fg_done=? WHERE id_task=?;';
-//     const id = req.params.id;
+export const updateGuestFlag = (req, res) => {
+  const id = req.params.id;
+  const { partyId, idGuest, fgAttend} = req.body;
+
+  const sql = `UPDATE TB_PARTY_GUEST
+                    SET fg_attend = ?
+                  WHERE id_party = ?
+                    AND id_guest = ?;`;
   
-//     // fg_done を数値で扱うため、0/1 に変換
-//     const updatedFlag = req.body.fg_done ? 1 : 0; 
-  
-//     db.query(sql, [updatedFlag, id], (err, result) => {
-//       if(err) {
-//         console.error("Database Error:", err);
-//         return res.status(500).json({Message: 'Error update todo flag', Error: err});
-//       } else {
-//         req.query.partyId = req.body.id_party;
-//         getTodos(req, res);
-//       }
-//     });
-// };
+    db.query(sql, [fgAttend, partyId, id], (err, result) => {
+      if(err) {
+        console.error("Database Error:", err);
+        return res.status(500).json({Message: 'Error update todo flag', Error: err});
+      } else {
+        req.query.partyId = partyId;
+        getGuestList(req, res);
+      }
+    });
+};
 
 
 export const deletePartyGuest = (req, res) => {

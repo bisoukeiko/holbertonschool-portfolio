@@ -640,7 +640,10 @@ function Party() {
                     </div>
                 </div>
                 <div className='row g-0'>
-                    <div className='col-md-6'>
+                <div className='col-md-4'>
+                    invitation card
+                </div>
+                    <div className='col-md-4'>
                         {!isAdd && (
                             <div>
                                 {selectedYear && (
@@ -651,7 +654,7 @@ function Party() {
                             </div>
                         )}
                     </div>
-                    <div className='col-md-6'>
+                    <div className='col-md-4'>
                         {!isAdd && (
                             <div>
                                 {selectedYear && (

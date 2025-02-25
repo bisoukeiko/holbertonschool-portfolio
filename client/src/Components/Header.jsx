@@ -52,7 +52,7 @@ function Header() {
 
   return (
     <header className="bg-white shadow-sm">
-      <h1 className='fw-semibold'>HAPPY CANDLES</h1>
+      <h1 className='fw-semibold text-center mt-5'>HAPPY CANDLES</h1>
       <nav className="container d-flex justify-content-between align-items-center py-3">
         {/* ナビゲーションメニュー */}
         <ul className="nav">
@@ -77,7 +77,7 @@ function Header() {
         <div>
           {userId ? (
             <span
-              className="text-danger fw-bold cursor-pointer"
+              className="text-danger fw-bold cursor-pointer border rounded p-2 ps-4 pe-4"
               style={{ cursor: "pointer" }}
               onClick={handleLogout}
             >

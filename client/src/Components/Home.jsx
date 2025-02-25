@@ -8,18 +8,18 @@ function Home() {
   const { userId } = useUser();
 
   return (
-    <div className='container mt-4'> {/* Bootstrapのコンテナを追加 */}
+    <div className='container mt-4'>
 
-      {/* 横並びにするためのrowとcolを追加 */}
-      <div className='row justify-content-center'>
-        <div className='col-md-4'> {/* 画面幅の半分を使用 */}
+      <div className='row justify-content-center g-0'>
+        <div className='col-md-4'>
           <User />
         </div>
-        <div className='col-md-4'> {/* 画面幅の半分を使用 */}
+        <div className='col-md-4'>
           <Child />
         </div>
       </div>
     </div>
+
   )
 }
 

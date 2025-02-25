@@ -158,7 +158,7 @@ function Child() {
 
   return (
 
-    <div className='d-flex min-vh-100 flex-column align-items-center mt-1'>
+    <div className='d-flex flex-column align-items-center mt-1'>
       <div className='w-100  rounded p-3'>
         <div className='d-flex justify-content-end'>
           {!isAdd && (

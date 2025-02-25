@@ -127,12 +127,12 @@ function Todo({ partyId }) {
                             type='text'
                             value={task}
                             placeholder='Enter the task'
-                            className='form-control text-break w-75' 
+                            className='form-control text-break' 
                             onChange={e => {setTask(e.target.value);
                                 setValues({...values, task: e.target.value});
                             }}
                         />
-                        <button type='submit' className='btn btn-outline-success'>
+                        <button type='submit' className='btn btn-outline-success btn-sm'>
                             {isEdit ? 'Update' : 'Add'}
                         </button>
                     </form>

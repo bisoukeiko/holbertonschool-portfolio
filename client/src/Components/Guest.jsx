@@ -6,6 +6,7 @@ import {Dropdown } from 'react-bootstrap';
 function Guest({ partyId, childId }) {
 
     const [isEdit, setIsEdit] = useState(false);
+    const [isEditFg, setIsEditFg] = useState(false);
     const [isDisplay, setIsDisplay] = useState(false);
     const [isAdd, setIsAdd] = useState(false);
     const [errValidation, setErrValidation] = useState([]);
@@ -55,25 +56,23 @@ function Guest({ partyId, childId }) {
         event.preventDefault();
         setGuestValue(guestData)
         setIsAdd(false);
+        setIsEditFg(false);
         setIsDisplay(true);
     }
 
     const handleChange = (guestId, field, value) => {
         setGuestValue({ ...guestValue, [field]: value});
-        setGuestList(guestList.map(guest =>
-          guest.idGuest === guestId ? {...guest, [field]: value} : guest
-        ));
     };
 
     const handleEdit = (e) => {
       e.preventDefault();
       setIsEdit(true);
-      return;
     }
 
     const handleClickAdd = () => {
       setIsAdd(true); 
       setIsEdit(false);
+      setIsEditFg(false);
       setIsDisplay(true);
       setGuestValue([]);
     } 
@@ -91,6 +90,37 @@ function Guest({ partyId, childId }) {
       })
     }
 
+    const getButtonClass = (fgAttend) => {
+      switch (fgAttend) {
+        case '1':
+          return 'text-success fw-semibold';  // 出席
+        case '2':
+          return 'text-secondary';   // 欠席
+        default:
+          return 'text-secondary'; // 未回答
+      }
+    };
+    
+    const getButtonLabel = (fgAttend) => {
+      switch (fgAttend) {
+        case '1':
+          return 'Attend';
+        case '2':
+          return "Can't Attend";
+        default:
+          return 'No answer';
+      }
+    };
+
+  
+    const handleEditFg = (event, guestData) => {
+        event.preventDefault();
+        setGuestValue(guestData)
+        setIsAdd(false);
+        setIsEdit(false);
+        setIsEditFg(true);
+        setIsDisplay(true);
+    }
 
     const handleAdd = (event) => {
         event.preventDefault();
@@ -119,7 +149,7 @@ function Guest({ partyId, childId }) {
             if (err.response && err.response.data.errors) {
               setErrValidation(err.response.data.errors.join('\n'));
             } else {
-              console.error("Error insert guest:", err);
+              console.error('Error insert guest:', err);
             }
         })
     }
@@ -132,7 +162,7 @@ function Guest({ partyId, childId }) {
       axios.put(`http://localhost:5000/guest/update/${updatedValues.idGuest}`, updatedValues)
       .then(res => {
           // console.log('update: ', res.data);
-          // setGuestList(res.data);
+          setGuestList(res.data);
           setIsEdit(false);
           setIsDisplay(false);
           setGuestValue([]);
@@ -143,11 +173,26 @@ function Guest({ partyId, childId }) {
           if (err.response && err.response.data.errors) {
             setErrValidation(err.response.data.errors.join('\n'));
           } else {
-            console.error("Error updating guest:", err);
+            console.error('Error updating guest:', err);
           }
       })
 
   }
+
+
+    const handleUpdateFg = (event) => {
+      event.preventDefault();
+      const updatedValues = { ...guestValue };
+      axios.put(`http://localhost:5000/guest/updateFlag/${updatedValues.idGuest}`, {...updatedValues, 'partyId': partyId})
+      .then(res => {
+          // console.log('update: ', res.data);
+          setGuestList(res.data);
+          setIsEditFg(false);
+          setIsDisplay(false);
+          setGuestValue([]);
+      })
+      .catch(err => console.log(err));   
+    }
 
     const handleDelete = (event) => {
       event.preventDefault();
@@ -196,8 +241,8 @@ function Guest({ partyId, childId }) {
                           <div className='table-responsive  w-100'>
                             <table className='table table-hover table-bordered table-sm w-100'>
                                 <colgroup>
-                                    <col style={{ width: '25%' }} />
-                                    <col style={{ width: '10%' }} />
+                                    <col style={{ width: '20%' }} />
+                                    <col style={{ width: '15%' }} />
                                     <col style={{ width: '10%' }} />
                                     <col style={{ width: '35%' }} />
                                     <col style={{ width: '20%' }} />
@@ -224,7 +269,11 @@ function Guest({ partyId, childId }) {
                                                   </div>
                                                 </td>
                                                 <td>
-                                                    {tbGuest.fgAttend}
+                                                  <div  className={`text-center ${getButtonClass(tbGuest.fgAttend)}`}
+                                                        onClick={(event) => handleEditFg(event, tbGuest)}
+                                                        style={{ cursor: 'pointer' }}>
+                                                    {getButtonLabel(tbGuest.fgAttend)}
+                                                  </div>
                                                 </td>
                                                 <td className=''>
                                                   <div className='text-center text-break'>
@@ -248,7 +297,7 @@ function Guest({ partyId, childId }) {
                                           <tr>
                                             <td colspan='5'>
                                             <div className='d-flex justify-content-center'>
-                                                <div className="mb-0" role="alert">
+                                                <div className='mb-0' role='alert'>
                                                     <div className='p-3'>
                                                         {noGuestsMsg}
                                                     </div>
@@ -278,11 +327,15 @@ function Guest({ partyId, childId }) {
                             <h4>Guests</h4>
                             {/* Add button */}
                             <div>
+                              {(!isEdit && !isEditFg) && (
+                                <div>
                                 {!isAdd && (
                                     <button onClick={ handleClickAdd } className='btn btn-outline-success'>
                                         + Add a guest
                                     </button>
                                 )}
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -313,7 +366,10 @@ function Guest({ partyId, childId }) {
                                                   </div>
                                                 </td>
                                                 <td>
-                                                    {tbGuest.fgAttend}
+                                                  <div  className={`text-center ${getButtonClass(tbGuest.fgAttend)}`}
+                                                        onClick={(event) => handleEditFg(event, tbGuest)}>
+                                                    {getButtonLabel(tbGuest.fgAttend)}
+                                                  </div>
                                                 </td>
                                                 <td className=''>
                                                   <div className='text-center text-break'>
@@ -350,10 +406,73 @@ function Guest({ partyId, childId }) {
             </div>
             <div className='col-md-4'>
                 <div>
-                    {/* guest card */}
 
-                    <div className='d-flex w-100 justify-content-center'>
+                    <div className='d-flex flex-column w-100 justify-content-center'>
 
+                        {/* card change atteng flag */}
+                        {isEditFg? (
+                            <div className='card w-100 mb-2'>
+                              <div className='card-header'>
+                                    <div className='d-flex flex-column justify-content-center'>
+                                        <h4 className='text-center'>{guestValue.guestName}</h4>
+                                        <div className='text-center'>
+                                            {guestValue.guestRelation}
+                                        </div>
+                                    </div>
+                              </div>
+                              <div className='card-body'>
+                                    <div className='form-check ms-2'>
+                                      <input
+                                        className='form-check-input'
+                                        type='radio'
+                                        name={`fgAttend_${guestValue.idGuest}`}
+                                        id='fgAttend1'
+                                        checked={guestValue.fgAttend === '1'}
+                                        onChange={() => handleChange(guestValue.idGuest, 'fgAttend', '1')}
+                                      />
+                                      <label className='form-check-label' htmlFor='fgAttend1'>
+                                        Attend
+                                      </label>
+                                    </div>
+
+                                    <div className='form-check ms-2'>
+                                      <input
+                                        className='form-check-input'
+                                        type='radio'
+                                        name={`fgAttend_${guestValue.idGuest}`}
+                                        id='fgAttend2'
+                                        checked={guestValue.fgAttend === '2'}
+                                        onChange={() => handleChange(guestValue.idGuest, 'fgAttend', '2')}
+                                      />
+                                      <label className='form-check-label' htmlFor='fgAttend2'>
+                                        Can't attend
+                                      </label>
+                                    </div>
+
+                                    <div className='form-check ms-2'>
+                                      <input
+                                        className='form-check-input'
+                                        type='radio'
+                                        name={`fgAttend_${guestValue.idGuest}`}
+                                        id='fgAttend0'
+                                        checked={guestValue.fgAttend === '0'}
+                                        onChange={() => handleChange(guestValue.idGuest, 'fgAttend', '0')}
+                                      />
+                                      <label className='form-check-label' htmlFor='fgAttend0'>
+                                        No answer
+                                      </label>
+                                    </div>
+
+                                    {/* Update button*/}
+                                    <span className='d-flex justify-content-end text-primary' style={{ cursor: 'pointer' }} 
+                                          onClick={handleUpdateFg} >
+                                        Update
+                                    </span>
+                              </div>
+                            </div>
+                        ) : (
+                          <div>
+                        {/* guest card */}
                         <div className='card w-100'>
                             <div className='card-header'>
                               {/* error message */}
@@ -364,10 +483,6 @@ function Guest({ partyId, childId }) {
                                       </div>
                                   )}
                               </div>
-
-
-
-
 
                               {/* dropdown child name */}
                               {isAdd ? (
@@ -391,13 +506,10 @@ function Guest({ partyId, childId }) {
                                           </Dropdown.Menu>
                                       </Dropdown>
                                       <span onClick={handleReset} className='text-danger mt-3 me-2 p-2'  style={{ cursor: 'pointer' }}>
-                                                            Reset
+                                          Reset
                                       </span>
         
                                   </div>
-        
-        
-
                                       <label htmlFor='guestName'>Guest name:</label>
                                       <input id='guestName' type='text' placeholder='' className='form-control' value={guestValue.guestName}
                                           onChange={event => handleChange(guestValue.idGuest, 'guestName', event.target.value)}
@@ -410,31 +522,35 @@ function Guest({ partyId, childId }) {
 
                               ) : (
 
-                              <div>
-                              {isEdit ? (
                                 <div>
-                                    <label htmlFor='guestName'>Guest name:</label>
-                                    <input id='guestName' type='text' placeholder='' className='form-control' value={guestValue.guestName}
-                                        onChange={event => handleChange(guestValue.idGuest, 'guestName', event.target.value)}
-                                    />
-                                    <label htmlFor='guestRelation' className='mt-2'>Relation:</label>
-                                    <input id='guestRelation' type='text' placeholder='' className='form-control' value={guestValue.guestRelation}
-                                        onChange={event => handleChange(guestValue.idGuest, 'guestRelation', event.target.value)}
-                                    />
-                                </div>
-                              ) : (
-                                <div className='d-flex flex-column justify-content-center'>
-                                    <h4 className='text-center'>{guestValue.guestName}</h4>
-                                    <div className='text-center'>
-                                        {guestValue.guestRelation}
+                                  {isEdit ? (
+                                    <div>
+                                        <label htmlFor='guestName'>Guest name:</label>
+                                        <input id='guestName' type='text' placeholder='' className='form-control' value={guestValue.guestName}
+                                            onChange={event => handleChange(guestValue.idGuest, 'guestName', event.target.value)}
+                                        />
+                                        <label htmlFor='guestRelation' className='mt-2'>Relation:</label>
+                                        <input id='guestRelation' type='text' placeholder='' className='form-control' value={guestValue.guestRelation}
+                                            onChange={event => handleChange(guestValue.idGuest, 'guestRelation', event.target.value)}
+                                        />
                                     </div>
+                                  ) : (
+                                    <div className='d-flex flex-column justify-content-center'>
+                                        <h4 className='text-center'>{guestValue.guestName}</h4>
+                                        <div className='text-center'>
+                                            {guestValue.guestRelation}
+                                        </div>
+                                    </div>
+                                  )}
                                 </div>
-                              )}
-                              </div>
                             )}
                             </div>
                             <div className='card-body p-4'>
                               <div>
+                                  <div className={`${getButtonClass(guestValue.fgAttend)} fs-5 text-center`}>
+                                      {getButtonLabel(guestValue.fgAttend)}
+                                  </div>
+                                <hr />
                                   <div>
                                       <label htmlFor='guestAllergy'>Allergy:</label>
                                       {(isEdit || isAdd) ? (
@@ -501,6 +617,8 @@ function Guest({ partyId, childId }) {
                               </div>
                             </div>
                         </div>
+                       </div>
+                      )}
                     </div>
                 </div>
             </div>

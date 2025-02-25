@@ -67,11 +67,11 @@ function User() {
 
 
   return (
-    <div className='d-flex vh-100 flex-column align-items-center mt-5'>
-      <div className='w-100 bg-white rounded p-3 '>
+    <div className='d-flex flex-column align-items-center mt-5 mb-4'>
+      <div className='w-100 bg-white rounded mt-3'>
 
           <form>
-              <div className='card d-flex flex-column h-100'>
+              <div className='card d-flex flex-column'>
                 <div className='card-header'>
                     <label htmlFor='userName'>user name:</label>
                     {isEdit ? (

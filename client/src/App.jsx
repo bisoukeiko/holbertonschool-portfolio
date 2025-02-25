@@ -5,8 +5,7 @@ import { UserProvider } from './Components/UserContext';
 import Home from './Components/Home';
 import Header from './Components/Header';
 import Party from './Components/Party';
-import User from './Components/User';
-import Todo from './Components/Todo';
+import Rsvp from './Components/Rsvp';
 
 
 function App() {
@@ -17,10 +16,11 @@ function App() {
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/party' element={<Party />} />
-        {/* <Route path='/user' element={<User />} /> */}
-          {/* <Route path='/todo' element={<Todo />} /> */}
+          <Route path='/Rsvp/:partyId' element={<Rsvp />} />
         </Routes>
+
       </Router>
+
     </UserProvider>
   );
 }

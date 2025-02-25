@@ -62,9 +62,6 @@ function Guest({ partyId, childId }) {
 
     const handleChange = (guestId, field, value) => {
         setGuestValue({ ...guestValue, [field]: value});
-        // setGuestList(guestList.map(guest =>
-        //   guest.idGuest === guestId ? {...guest, [field]: value} : guest
-        // ));
     };
 
     const handleEdit = (e) => {
@@ -186,7 +183,6 @@ function Guest({ partyId, childId }) {
     const handleUpdateFg = (event) => {
       event.preventDefault();
       const updatedValues = { ...guestValue };
-      console.log('FG updatedValues', updatedValues);
       axios.put(`http://localhost:5000/guest/updateFlag/${updatedValues.idGuest}`, {...updatedValues, 'partyId': partyId})
       .then(res => {
           // console.log('update: ', res.data);

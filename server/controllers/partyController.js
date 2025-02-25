@@ -6,6 +6,32 @@ import { deleteShoppingByParty } from './shoppingController.js';
 import { deleteGuestByParty } from './guestController.js';
 
 
+// select party by party id
+export const selectParty = (req, res) => {
+  const { partyId }  = req.query;
+  const sql = `SELECT TBC.child_name AS childName,
+                      TIMESTAMPDIFF(YEAR, TBC.child_birthday, TBP.party_date) AS childYears,
+                      DATE_FORMAT(TBP.party_date, '%W, %Y %M %d') AS partyDate,
+                      TIME_FORMAT(TBP.party_time_from, '%H:%i') AS partyTimeFrom,
+                      TIME_FORMAT(TBP.party_time_to, '%H:%i') AS partyTimeTo,
+                      TBP.party_place AS partyPlace,
+                      TBP.party_contact1 AS partyContact1,
+                      TBP.party_contact2 AS partyContact2
+                 FROM TB_PARTY AS TBP,
+                      TB_CHILD AS TBC
+                WHERE TBP.id_party = ?
+                  AND TBP.id_child = TBC.id_child;`
+
+  db.query(sql, [partyId], (err, result)=> {
+    if(err) {
+      console.error("Database Error:", err);
+      return res.status(500).json({Message: 'Error selecting child', Error: err});
+    }
+    return res.status(200).json(result);
+  })
+};
+
+
 // insert party
 export const insertParty = (req, res) => {
   const sql = `INSERT INTO TB_PARTY

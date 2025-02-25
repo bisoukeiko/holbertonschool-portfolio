@@ -166,7 +166,10 @@ export const updateGuest = (req, res) => {
 
 export const updateGuestFlag = (req, res) => {
   const id = req.params.id;
+
   const { partyId, idGuest, fgAttend} = req.body;
+
+  console.log('partyId: ', partyId);
 
   const sql = `UPDATE TB_PARTY_GUEST
                     SET fg_attend = ?
@@ -220,3 +223,43 @@ export const deleteGuestByParty = (partyId) => {
     });
   }); 
 };
+
+
+export const updateRsvp = (req, res) => {
+    const { guestName, guestRelation, guestAllergy, otherInfo, parentPhone, parentEmail, partyId, fgAttend} = req.body;
+    console.log('up data: ', req.body);
+    const validator = new GuestValidator(guestName, guestRelation, guestAllergy, otherInfo, parentPhone, parentEmail);
+    if (!validator.validate()) {
+      return res.status(400).json({errors: validator.getErrors()});
+    }
+
+    const sql = `UPDATE TB_GUEST SET  guest_allergy = ?,
+                                      other_info = ?,
+                                      parent_phone = ?,
+                                      parent_email= ?
+                                WHERE id_guest=?;`;
+    const id = req.params.id;
+    const values = [guestAllergy, otherInfo, parentPhone, parentEmail, id];
+
+    db.query(sql, values, (err, result) => {
+      if(err) {
+        console.error("Database Error:", err);
+        return res.status(500).json({Message: 'Error update todo', Error: err});
+      } else {
+
+        const sqlFg = `UPDATE TB_PARTY_GUEST
+                          SET fg_attend = ?
+                        WHERE id_party = ?
+                          AND id_guest = ?;`;
+        
+          db.query(sqlFg, [fgAttend, partyId, id], (err, result) => {
+            if(err) {
+              console.error("Database Error:", err);
+              return res.status(500).json({Message: 'Error update todo flag', Error: err});
+            } else {
+              return res.status(201).json(result);
+            }
+          });
+      }
+    });
+}

@@ -66,11 +66,11 @@ function Header() {
               Party
             </Link>
           </li>
-          {/* <li className="nav-item">
-            <a className="nav-link text-dark fw-semibold" href="#">
-              Link
-            </a>
-          </li> */}
+          <li className="nav-item">
+            <Link to="/createcard" className="nav-link text-dark fw-semibold">
+              Create Invitation
+            </Link>
+          </li>
         </ul>
 
         {/* Googleログイン or ログアウト */}

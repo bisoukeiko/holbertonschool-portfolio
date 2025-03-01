@@ -6,10 +6,10 @@ import ChildValidator from '../validators/ChildValidator.js';
 // select child with user ID
 export const getChildByIdUser = (req, res) => {
     const { userId }  = req.query;
-    const sql = `SELECT id_child,
-                        id_parent,
-                        child_name,
-                        DATE_FORMAT(child_birthday, '%Y-%m-%d') AS child_birthday
+    const sql = `SELECT id_child AS idChild,
+                        id_parent AS idParent,
+                        child_name AS childName,
+                        DATE_FORMAT(child_birthday, '%Y-%m-%d') AS childBirthday
                    FROM TB_CHILD
                   WHERE id_parent = ?
                ORDER BY child_birthday desc;`
@@ -35,10 +35,11 @@ export const getChildParty = (req, res) => {
                       TIME_FORMAT(TBP.party_time_from, '%H:%i') AS party_time_from,
                       TIME_FORMAT(TBP.party_time_to, '%H:%i') AS party_time_to,
                       TBP.party_place,
+                      TBP.party_place2,
+                      TBP.party_place3,
                       TIMESTAMPDIFF(YEAR, TBC.child_birthday, TBP.party_date) AS child_years,
                       TBP.party_contact1,
-                      TBP.party_contact2,
-                      TBU.user_phone
+                      TBP.party_contact2
                  FROM TB_CHILD AS TBC
             LEFT JOIN TB_PARTY AS TBP 
                    ON TBC.id_child = TBP.id_child
@@ -75,10 +76,11 @@ export const getChildParty = (req, res) => {
                 partyTimeFrom: row.party_time_from,
                 partyTimeTo: row.party_time_to,
                 partyPlace: row.party_place,
+                partyPlace2: row.party_place2,
+                partyPlace3: row.party_place3,
                 childYears: row.child_years,
                 partyContact1 : row.party_contact1,
-                partyContact2 : row.party_contact2,
-                userPhone: row.user_phone
+                partyContact2 : row.party_contact2
             })
         }
     });

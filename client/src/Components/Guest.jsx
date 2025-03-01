@@ -95,7 +95,7 @@ function Guest({ partyId, childId }) {
         case '1':
           return 'text-success fw-semibold';  // 出席
         case '2':
-          return 'text-secondary';   // 欠席
+          return 'text-danger';   // 欠席
         default:
           return 'text-secondary'; // 未回答
       }

@@ -73,7 +73,7 @@ function User() {
           <form>
               <div className='card d-flex flex-column'>
                 <div className='card-header'>
-                    <label htmlFor='userName'>user name:</label>
+                    <label htmlFor='userName'>User name:</label>
                     {isEdit ? (
                         <input id='userName' type='text' placeholder='Enter user name' className='form-control fs-5' value={userInfo.userName}
                         onChange={e => setUserInfo({...userInfo, userName: e.target.value})}/>
@@ -83,7 +83,7 @@ function User() {
                 </div>
                 <div className='card-body flex-grow-1'>
                   <div className='mb-1'>
-                      <label htmlFor='userEmail'>e-mail:</label>
+                      <label htmlFor='userEmail'>E-mail:</label>
                       {isEdit ? (
                         <input id='userEmail' type='text' placeholder='Enter e-mail' className='form-control fs-5' value={userInfo.userEmail}
                         onChange={e => setUserInfo({...userInfo, userEmail: e.target.value})}/>
@@ -91,7 +91,7 @@ function User() {
                         <p className='fs-5'>{userInfo.userEmail}</p>
                       )}
                   </div>
-                  <div className='mb-1'>
+                  {/* <div className='mb-1'>
                       <label htmlFor='userPhone'>phone:</label>
                       {isEdit ? (
                         <input id='userPhone' type='text' placeholder='Enter phone number' className='form-control fs-5' value={userInfo.userPhone}
@@ -99,8 +99,12 @@ function User() {
                       ) : (
                         <p className='fs-5'>{userInfo.userPhone}</p>
                       )}
-                  </div>
+                  </div> */}
                   <div className='d-flex justify-content-end'>
+                    {/* <span onClick={handleCancel} className='text-danger mt-3 me-2 p-2'  style={{ cursor: 'pointer' }}>
+                        Cancel
+                    </span> */}
+
                     <span className='text-primary me-2' style={{ cursor: 'pointer' }}  onClick={isEdit ? handleUpdate : handleEdit}>
                       {isEdit ? 'Update' : 'Edit'}
                     </span>

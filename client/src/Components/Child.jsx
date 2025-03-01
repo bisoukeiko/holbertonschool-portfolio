@@ -75,6 +75,7 @@ function Child() {
           child_parties: []
       });
       setIsAdd(false);
+      setErrValidationChild([])
     }
 
     const handleAdd = (event) => {
@@ -112,6 +113,7 @@ function Child() {
 
     const handleUpdate = (event, childId) => {
       event.preventDefault();
+      setErrValidationChild([]);
 
       const updatedValues = { ...values, childId: childId };
       // console.log(updatedValues);
@@ -175,7 +177,7 @@ function Child() {
             {/* error message */}
             <div>
                 {errValidationChild && (
-                    <div className='text-danger mb-2 ms-2' style={{ whiteSpace: 'pre-wrap' }}>
+                    <div className='text-danger ms-2' style={{ whiteSpace: 'pre-wrap' }}>
                         {errValidationChild}
                     </div>
                 )}
@@ -205,7 +207,7 @@ function Child() {
                 </div>
                 <div className='d-flex justify-content-end'>
                 <span onClick={handleCancel} className='text-danger mt-3 me-3'  style={{ cursor: 'pointer' }}>
-                    Cancel addition
+                    Cancel
                 </span>
                 <button onClick={  handleAdd } className='btn btn-outline-success mt-2'>
                   Add

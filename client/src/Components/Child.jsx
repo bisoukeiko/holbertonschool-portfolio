@@ -160,9 +160,9 @@ function Child() {
 
   return (
 
-    <div className='d-flex flex-column align-items-center mt-1'>
-      <div className='w-100  rounded p-3'>
-        <div className='d-flex justify-content-end'>
+    <div className='d-flex ustify-content-center align-items-center mt-1'>
+      <div className='w-100 p-3'>
+        <div className='d-flex justify-content-start ms-4'>
           {!isAdd && (
             <button onClick={() => setIsAdd(true)} className='btn btn-outline-success mb-2 me1'> + Add a new child</button>
           )}
@@ -183,7 +183,7 @@ function Child() {
                 )}
             </div>
 
-            <div className='card mb-2 mt-5'>
+            <div className='card mb-2 mt-5' style={{ width: '18rem' }}>
               <div className='card-header mb-2'>
                 <div className='d-flex align-items-center'>
                   <label className='me-2'></label>
@@ -217,12 +217,12 @@ function Child() {
             </div>
           </form>
         ) : (
-
-          <div>
+          <div className='d-flex justify-content-center'>
+          <div className='d-flex flex-wrap gap-3'>
             {/* Child Cards */}
-            {
+            { 
               childList?.map((childData) => (
-                <div key= {childData.id_child} className='card mb-3'>
+                <div key= {childData.id_child} className='card mb-3 mt-3' style={{ width: '18rem' }}>
                   <div className='card-header'>
 
                     {/* error message */}
@@ -306,6 +306,7 @@ function Child() {
                 </div>
               ))
             }
+          </div>
           </div>
         )}
 

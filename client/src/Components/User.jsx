@@ -73,7 +73,7 @@ function User() {
           <form>
               <div className='card d-flex flex-column'>
                 <div className='card-header'>
-                    <label htmlFor='userName'>User name:</label>
+                    <label htmlFor='userName'></label>
                     {isEdit ? (
                         <input id='userName' type='text' placeholder='Enter user name' className='form-control fs-5' value={userInfo.userName}
                         onChange={e => setUserInfo({...userInfo, userName: e.target.value})}/>
@@ -88,7 +88,7 @@ function User() {
                         <input id='userEmail' type='text' placeholder='Enter e-mail' className='form-control fs-5' value={userInfo.userEmail}
                         onChange={e => setUserInfo({...userInfo, userEmail: e.target.value})}/>
                       ) : (
-                        <p className='fs-5'>{userInfo.userEmail}</p>
+                        <p className=''>{userInfo.userEmail}</p>
                       )}
                   </div>
                   {/* <div className='mb-1'>

@@ -16,14 +16,14 @@ function Home() {
         <img src={home_3} className="img-fluid w-50" alt="" />
       </div>
     </div>
-    <div className='row justify-content-center g-0'>
+    <div className='row g-0'>
 
-        <div className='col-md-4'>
+        {/* <div className='col-md-4'>
         {userId && (
           <User />
         )}
-        </div>
-        <div className='col-md-4'>
+        </div> */}
+        <div className='col'>
         {userId && (
           <Child />
         )}

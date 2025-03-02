@@ -13,8 +13,8 @@ function Invitation({ partyId }) {
 
   return (
 
-        <div className='d-flex flex-column w-100 justify-content-center mt-3'>
-        <div className='card w-100 m-3'>
+        <div className='d-flex flex-column justify-content-center mt-3'>
+        <div className='card  m-3'>
             <div className='card-header'>
                     <h4 className='p-1'>Invitation</h4>
                 </div>

@@ -367,14 +367,7 @@ function CreateCard() {
                             <div className='ms-2'>Enter the party details.</div>
                         </div>
 
-                        {/* error message */}
-                        <div>
-                            {errValidation && (
-                                <div className='text-danger mb-4 ms-3' style={{ whiteSpace: 'pre-wrap' }}>
-                                    {errValidation}
-                                </div>
-                            )}
-                        </div>
+
                         
                         {/* card party */}
 
@@ -406,6 +399,15 @@ function CreateCard() {
                                     </div>
                                 </div>
                                 <div className='card-body p-3'>
+                                    {/* error message */}
+                                    <div>
+                                        {errValidation && (
+                                            <div className='text-danger mb-4 ms-3' style={{ whiteSpace: 'pre-wrap' }}>
+                                                {errValidation}
+                                            </div>
+                                        )}
+                                    </div>
+
                                     {/* Edit party */}                        
                                     {((isEdit && userId) || (userId && !selectedParty) || !userId)  ? (
                                             <div>

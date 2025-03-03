@@ -90,6 +90,24 @@ function Guest({ partyId, childId }) {
       })
     }
 
+    const handleCancel = () => {
+      setGuestValue({
+          idGuest: '',
+          guestName: '',
+          guestRelation: '',
+          guestAllergy: '',
+          otherInfo: '',
+          parentPhone: '',
+          parentEmail: '',
+          fgAttend: ''
+      })
+      setIsAdd(false); 
+      setIsEdit(false);
+      setIsEditFg(false);
+      setIsDisplay(false);
+      setGuestValue([]);
+    }
+
     const getButtonClass = (fgAttend) => {
       switch (fgAttend) {
         case '1':
@@ -595,10 +613,15 @@ function Guest({ partyId, childId }) {
                                   </div>
 
                                   
-                                  <div className='d-flex justify-content-end'>
+                                  <div className='d-flex justify-content-end align-items-center mt-2'>
+                                      {(isEdit || isAdd) && (
+                                          <span onClick={handleCancel} className='text-danger me-3'  style={{ cursor: 'pointer' }}>
+                                              Cancel
+                                          </span>
+                                      )}
                                       {/* Add button */}
                                       {isAdd ? (
-                                          <button onClick={handleAdd} className='btn btn-outline-success mt-3'>
+                                          <button onClick={handleAdd} className='btn btn-outline-success'>
                                               Add
                                           </button>
                                       ) : (

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useUser } from './UserContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import {Dropdown, Form } from 'react-bootstrap';
+import {Form } from 'react-bootstrap';
 
 function Child() {
     const { userId } = useUser();
@@ -23,7 +23,7 @@ function Child() {
 
     useEffect(() => {
         if (userId) {
-          setValues(prevValues => ({ ...prevValues, id_parent: userId }));
+          // setValues(prevValues => ({ ...prevValues, id_parent: userId }));
           axios.get(`http://localhost:5000/child/selectChildParty/`, {params: { userId: userId }})
             .then(res => {
               if (res.data.length !== 0) {
@@ -287,7 +287,7 @@ function Child() {
                                   <li key = {partyData.idParty} >
                                       <p  className='text-dark cursor-pointer ms-3' 
                                           style={{ cursor: 'pointer' }} 
-                                          onClick={() => navigate('/party', { state: { childList, partyData } })}
+                                          onClick={() => navigate('/party', { state: { partyId: partyData.idParty } })}
                                           onMouseEnter={(e) => e.target.classList.replace('text-dark', 'text-primary')}
                                           onMouseLeave={(e) => e.target.classList.replace('text-primary', 'text-dark')}>
                                         {partyData.childYears} years old
@@ -300,7 +300,7 @@ function Child() {
                       )}
                   </div>
                   <span className='text-end text-success me-3 mb-3'style={{ cursor: 'pointer' }}
-                        onClick={() => navigate('/party', { state: { childList, partyData: {} }})}>
+                        onClick={() => navigate('/party')}>
                       + add a new party
                   </span>
                 </div>

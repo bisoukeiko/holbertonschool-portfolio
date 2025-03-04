@@ -32,8 +32,10 @@ export const selectPartyByChild = (req, res) => {
 export const selectParty = (req, res) => {
 
   const { partyId }  = req.query;
-  const sql = `SELECT TBC.child_name AS childName,
+  const sql = `SELECT TBC.id_child AS idChild,
+                      TBC.child_name AS childName,
                       TIMESTAMPDIFF(YEAR, TBC.child_birthday, TBP.party_date) AS childYears,
+                      TBP.id_party AS idParty,
                       DATE_FORMAT(TBP.party_date, '%Y-%m-%d') AS partyDate,
                       DATE_FORMAT(TBP.party_date, '%W, %d %M %Y ') AS partyDate2,                      
                       TIME_FORMAT(TBP.party_time_from, '%H:%i') AS partyTimeFrom,
@@ -42,8 +44,7 @@ export const selectParty = (req, res) => {
                       TBP.party_place2 AS partyPlace2,
                       TBP.party_place3 AS partyPlace3,
                       TBP.party_contact1 AS partyContact1,
-                      TBP.party_contact2 AS partyContact2,
-                      TBP.delete_at AS partyDelete
+                      TBP.party_contact2 AS partyContact2
                  FROM TB_PARTY AS TBP,
                       TB_CHILD AS TBC
                 WHERE TBP.id_party = ?
@@ -61,7 +62,7 @@ export const selectParty = (req, res) => {
 
 // insert party
 export const insertParty = (req, res) => {
-  const { partyDate, partyTimeFrom, partyTimeTo, partyPlace, partyPlace2, partyPlace3, partyContact1, partyContact2 } = req.body;
+  const { idChild, partyDate, partyTimeFrom, partyTimeTo, partyPlace, partyPlace2, partyPlace3, partyContact1, partyContact2 } = req.body;
   const validator = new PartyValidator(partyDate, partyTimeFrom, partyTimeTo, partyPlace, partyPlace2, partyPlace3, partyContact1, partyContact2);
   if (!validator.validate()) {
     // console.log(validator.getErrors());
@@ -79,7 +80,7 @@ export const insertParty = (req, res) => {
                         party_place3,
                         party_contact1,
                         party_contact2)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?);`;
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
 
   const values = [
           uuidv4(),
@@ -144,9 +145,11 @@ export const updateParty = (req, res) => {
       console.error("Database Error:", err);
       return res.status(500).json({Message: 'Error update party', Error: err});
     } else {
-
-      req.query.partyId = partyId;
-      selectParty(req, res);
+      req.query.userId = req.body.userId;
+      req.query.insertedUuid = partyId;
+      getChildParty(req, res);
+      // req.query.partyId = partyId;
+      // selectParty(req, res);
       // return res.status(201).json({ message: 'User updated successfully' });
     }
   });

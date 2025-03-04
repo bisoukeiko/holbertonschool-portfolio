@@ -90,12 +90,30 @@ function Guest({ partyId, childId }) {
       })
     }
 
+    const handleCancel = () => {
+      setGuestValue({
+          idGuest: '',
+          guestName: '',
+          guestRelation: '',
+          guestAllergy: '',
+          otherInfo: '',
+          parentPhone: '',
+          parentEmail: '',
+          fgAttend: ''
+      })
+      setIsAdd(false); 
+      setIsEdit(false);
+      setIsEditFg(false);
+      setIsDisplay(false);
+      setGuestValue([]);
+    }
+
     const getButtonClass = (fgAttend) => {
       switch (fgAttend) {
         case '1':
           return 'text-success fw-semibold';  // 出席
         case '2':
-          return 'text-secondary';   // 欠席
+          return 'text-danger';   // 欠席
         default:
           return 'text-secondary'; // 未回答
       }
@@ -595,10 +613,15 @@ function Guest({ partyId, childId }) {
                                   </div>
 
                                   
-                                  <div className='d-flex justify-content-end'>
+                                  <div className='d-flex justify-content-end align-items-center mt-2'>
+                                      {(isEdit || isAdd) && (
+                                          <span onClick={handleCancel} className='text-danger me-3'  style={{ cursor: 'pointer' }}>
+                                              Cancel
+                                          </span>
+                                      )}
                                       {/* Add button */}
                                       {isAdd ? (
-                                          <button onClick={handleAdd} className='btn btn-outline-success mt-3'>
+                                          <button onClick={handleAdd} className='btn btn-outline-success'>
                                               Add
                                           </button>
                                       ) : (

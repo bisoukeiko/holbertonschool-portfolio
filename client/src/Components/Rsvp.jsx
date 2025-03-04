@@ -29,14 +29,14 @@ function Rsvp() {
       if (partyId) {
           axios.get(`http://localhost:5000/guest/select`, {params: { partyId: partyId }})
               .then(res => {
-                  console.log(res.data);
+                  // console.log(res.data);
                   setGuestList(res.data);
               })
               .catch(err => console.log(err));
 
           axios.get(`http://localhost:5000/party/select`, {params: { partyId: partyId }})
           .then(res => {
-              console.log('party: ', res.data[0]);
+              // console.log('party: ', res.data[0]);
               setPartyInfo(res.data[0]);
           })
           .catch(err => console.log(err));

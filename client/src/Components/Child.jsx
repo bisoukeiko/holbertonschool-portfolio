@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useUser } from './UserContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import {Dropdown, Form } from 'react-bootstrap';
+import {Form } from 'react-bootstrap';
 
 function Child() {
     const { userId } = useUser();
@@ -23,7 +23,7 @@ function Child() {
 
     useEffect(() => {
         if (userId) {
-          setValues(prevValues => ({ ...prevValues, id_parent: userId }));
+          // setValues(prevValues => ({ ...prevValues, id_parent: userId }));
           axios.get(`http://localhost:5000/child/selectChildParty/`, {params: { userId: userId }})
             .then(res => {
               if (res.data.length !== 0) {
@@ -75,6 +75,7 @@ function Child() {
           child_parties: []
       });
       setIsAdd(false);
+      setErrValidationChild([])
     }
 
     const handleAdd = (event) => {
@@ -112,6 +113,7 @@ function Child() {
 
     const handleUpdate = (event, childId) => {
       event.preventDefault();
+      setErrValidationChild([]);
 
       const updatedValues = { ...values, childId: childId };
       // console.log(updatedValues);
@@ -158,9 +160,9 @@ function Child() {
 
   return (
 
-    <div className='d-flex flex-column align-items-center mt-1'>
-      <div className='w-100  rounded p-3'>
-        <div className='d-flex justify-content-end'>
+    <div className='d-flex ustify-content-center align-items-center mt-1'>
+      <div className='w-100 p-3'>
+        <div className='d-flex justify-content-start ms-4'>
           {!isAdd && (
             <button onClick={() => setIsAdd(true)} className='btn btn-outline-success mb-2 me1'> + Add a new child</button>
           )}
@@ -175,13 +177,13 @@ function Child() {
             {/* error message */}
             <div>
                 {errValidationChild && (
-                    <div className='text-danger mb-2 ms-2' style={{ whiteSpace: 'pre-wrap' }}>
+                    <div className='text-danger ms-2' style={{ whiteSpace: 'pre-wrap' }}>
                         {errValidationChild}
                     </div>
                 )}
             </div>
 
-            <div className='card mb-2 mt-5'>
+            <div className='card mb-2 mt-5' style={{ width: '18rem' }}>
               <div className='card-header mb-2'>
                 <div className='d-flex align-items-center'>
                   <label className='me-2'></label>
@@ -205,7 +207,7 @@ function Child() {
                 </div>
                 <div className='d-flex justify-content-end'>
                 <span onClick={handleCancel} className='text-danger mt-3 me-3'  style={{ cursor: 'pointer' }}>
-                    Cancel addition
+                    Cancel
                 </span>
                 <button onClick={  handleAdd } className='btn btn-outline-success mt-2'>
                   Add
@@ -215,12 +217,12 @@ function Child() {
             </div>
           </form>
         ) : (
-
-          <div>
+          <div className='d-flex justify-content-center'>
+          <div className='d-flex flex-wrap gap-3'>
             {/* Child Cards */}
-            {
+            { 
               childList?.map((childData) => (
-                <div key= {childData.id_child} className='card mb-3'>
+                <div key= {childData.id_child} className='card mb-3 mt-3' style={{ width: '18rem' }}>
                   <div className='card-header'>
 
                     {/* error message */}
@@ -285,7 +287,7 @@ function Child() {
                                   <li key = {partyData.idParty} >
                                       <p  className='text-dark cursor-pointer ms-3' 
                                           style={{ cursor: 'pointer' }} 
-                                          onClick={() => navigate('/party', { state: { childList, partyData } })}
+                                          onClick={() => navigate('/party', { state: { partyId: partyData.idParty } })}
                                           onMouseEnter={(e) => e.target.classList.replace('text-dark', 'text-primary')}
                                           onMouseLeave={(e) => e.target.classList.replace('text-primary', 'text-dark')}>
                                         {partyData.childYears} years old
@@ -298,12 +300,13 @@ function Child() {
                       )}
                   </div>
                   <span className='text-end text-success me-3 mb-3'style={{ cursor: 'pointer' }}
-                        onClick={() => navigate('/party', { state: { childList, partyData: {} }})}>
+                        onClick={() => navigate('/party')}>
                       + add a new party
                   </span>
                 </div>
               ))
             }
+          </div>
           </div>
         )}
 

@@ -358,8 +358,8 @@ function CreateCard() {
             <div className='row  g-0'>
                 <div className='col-md-3'>
 
-                    <div className='d-flex flex-column w-100 justify-content-center mt-4 mb-5'>
-                        <div className='d-flex align-items-center  m-3 mb-0'>
+                    <div className='d-flex flex-column w-100 justify-content-center mt-4'>
+                        <div className='d-flex align-items-center  mt-4 ms-3'>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-1-square" viewBox="0 0 16 16">
                                 <path d="M9.283 4.002V12H7.971V5.338h-.065L6.072 6.656V5.385l1.899-1.383z"/>
                                 <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm15 0a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"/>
@@ -371,7 +371,7 @@ function CreateCard() {
                         
                         {/* card party */}
 
-                        <div className='card'>
+                        <div className='card mt-3'>
                                 <div className='card-header p-4'>    
                                     <div>
                                         <div className='d-flex justify-content-center align-items-end'>

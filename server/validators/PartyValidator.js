@@ -15,11 +15,14 @@ class PartyValidator {
 
         if (!this.partyDate || this.partyDate.trim() === '') {
             this.errors.push('Party date is required.')
+            return;
         }
 
 
         const partyDate = new Date(this.partyDate);
         const today = new Date();
+        const maxDate = new Date();
+        maxDate.setFullYear(today.getFullYear() + 100);
 
         // Check if the date is valid
         if (isNaN(partyDate.getTime())) {
@@ -27,9 +30,15 @@ class PartyValidator {
             return;
         }
 
-        // Checking for a future date
+        // Checking for a past date
         if (partyDate < today) {
             this.errors.push('Party date cannot be in the past.');
+            return;
+        }
+
+        // Checking for a future date
+        if (partyDate > maxDate) {
+            this.errors.push('Party date cannot be more than 100 years in the future.');
             return;
         }
 

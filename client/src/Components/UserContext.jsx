@@ -5,7 +5,6 @@ export const UserContext = createContext();
 
 export const UserProvider = ({ children}) => {
     const [userId, setUserId] = useState('');
-    // const [childrenIdList, setChildrenIdList] = useState([]);
 
     const login = (Id) => setUserId(Id);
     const logout = () => setUserId('');
@@ -19,4 +18,4 @@ export const UserProvider = ({ children}) => {
 
 
 export const useUser = () => useContext(UserContext);
-export const useChildrenIdList = () => useContext(UserContext);
+

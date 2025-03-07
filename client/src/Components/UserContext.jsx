@@ -1,16 +1,23 @@
-import { createContext, useState, useEffect, useContext } from "react";
-import axios from "axios";
+import { createContext, useState, useContext } from 'react';
 
 export const UserContext = createContext();
 
 export const UserProvider = ({ children}) => {
-    const [userId, setUserId] = useState('');
+    const [userId, setUserId] = useState(null);
+    const [token, setToken] = useState(null);
 
-    const login = (Id) => setUserId(Id);
-    const logout = () => setUserId('');
+    const login = (Id, accessToken) => {
+        setUserId(Id);
+        setToken(accessToken);
+    }
+
+    const logout = () => {
+        setUserId(null);
+        setToken(null);
+    }
 
     return (
-        <UserContext.Provider value={{ userId, login, logout }}>
+        <UserContext.Provider value={{ userId, token, login, logout }}>
             {children}
         </UserContext.Provider>
     );

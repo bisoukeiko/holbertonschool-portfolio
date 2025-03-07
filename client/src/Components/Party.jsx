@@ -86,7 +86,7 @@ function Party() {
                 const foundParty = selectedChild.child_parties.find(party => party.idParty === selectedParty);
                 if (foundParty) {
                     setSelectedYear(foundParty.childYears);
-                    // setSelectedParty(foundParty.idParty);
+                    setSelectedParty(foundParty.idParty);
                 }
             }
         }
@@ -727,17 +727,6 @@ function Party() {
             <div className='row g-0'>
                 <div className='col-md-4'>
                     {!isAdd && (
-                            <div>
-                                {selectedYear && (
-                                    <div>
-                                        <Invitation partyId={selectedParty} />
-                                    </div>
-                                )}
-                            </div>
-                    )}
-                </div>
-                <div className='col-md-4'>
-                    {!isAdd && (
                         <div>
                             {selectedYear && (
                                 <div>
@@ -758,7 +747,17 @@ function Party() {
                         </div>
                     )}
                 </div>
-
+                <div className='col-md-4'>
+                    {!isAdd && (
+                            <div>
+                                {selectedYear && (
+                                    <div>
+                                        <Invitation partyId={selectedParty} />
+                                    </div>
+                                )}
+                            </div>
+                    )}
+                </div>
             </div>
         </div>
   )

@@ -114,7 +114,7 @@ function Shopping({ partyId }) {
     return (
         <div className='d-flex w-100 justify-content-center mt-3'>
             <div className='card w-100 m-3'>
-                <div className='card-header'>
+                <div className='card-header p-3'>
                     <h4 className='p-1'>Shopping List</h4>
                 </div>
                 <div className='card-body p-3'>

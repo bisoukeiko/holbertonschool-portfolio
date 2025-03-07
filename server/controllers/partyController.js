@@ -29,6 +29,7 @@ export const selectPartyByChild = (req, res) => {
 
 
 // select party by party id
+// router.get('/select', selectParty);
 export const selectParty = (req, res) => {
 
   const { partyId }  = req.query;
@@ -44,7 +45,9 @@ export const selectParty = (req, res) => {
                       TBP.party_place2 AS partyPlace2,
                       TBP.party_place3 AS partyPlace3,
                       TBP.party_contact1 AS partyContact1,
-                      TBP.party_contact2 AS partyContact2
+                      TBP.party_contact2 AS partyContact2,
+                      TBP.party_id_folder AS partyIdFolder,
+                      TBP.party_id_invitation AS partyIdInvitation
                  FROM TB_PARTY AS TBP,
                       TB_CHILD AS TBC
                 WHERE TBP.id_party = ?
@@ -154,6 +157,48 @@ export const updateParty = (req, res) => {
     }
   });
 }
+
+
+export const updateFolder = (req, res) => {
+  const { IdFolder } = req.body;
+  const partyId = req.params.partyId;
+  // console.log('partyId: ', partyId)
+
+  const sql = `UPDATE TB_PARTY SET
+                      party_id_folder = ?
+                WHERE id_party = ?;`;
+
+  const values = [IdFolder, partyId];
+
+  db.query(sql, values, (err, result) => {
+    if(err) {
+      return res.status(500).json({ error: 'error: update party_id_folder' });
+    } else {
+      return res.status(201).json({ message: 'party_id_folder updated successfully' });
+    }
+  });
+};
+
+
+export const updateInvitation = (req, res) => {
+  const { IdInvitation } = req.body;
+  const partyId = req.params.partyId;
+
+  const sql = `UPDATE TB_PARTY SET
+                      party_id_invitation = ?
+                WHERE id_party = ?;`;
+
+  const values = [IdInvitation, partyId];
+
+  db.query(sql, values, (err, result) => {
+    if(err) {
+      return res.status(500).json({ error: 'error: update party_id_folder' });
+    } else {
+      return res.status(201).json({ message: 'party_id_folder updated successfully' });
+    }
+  });
+};
+
 
 
 // delete party by partyID

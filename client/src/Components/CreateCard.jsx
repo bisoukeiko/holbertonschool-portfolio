@@ -27,11 +27,13 @@ import card_20 from '../assets/template/card_20.png';
 
 function CreateCard() {
     const { userId } = useUser();
+    const { token } = useUser();
 
     const location = useLocation();
     const { partyId } = location.state || {};
 
     const [isEdit, setIsEdit] = useState(false);
+    const [isSave, setIsSave] = useState(false);
     const [errValidation, setErrValidation] = useState([]);
 
     const [childList, setChildList] = useState([]);
@@ -53,7 +55,7 @@ function CreateCard() {
         partyContact2: '',
         childName: '',
         childYears: '',
-        partyDelete: ''
+        partyIdFolder: '',
     });
 
     // canvas, QRcode
@@ -63,10 +65,9 @@ function CreateCard() {
 
     useEffect(() => {
         if (userId) {
-            console.log('userId: ', userId);
             axios.get(`http://localhost:5000/child/selectByIdUser`, {params: { userId: userId }})
             .then(res => {
-                console.log('childList: ', res.data);
+                // console.log('childList: ', res.data);
                 setChildList(res.data);
             })
             .catch(err => console.log(err));
@@ -76,8 +77,11 @@ function CreateCard() {
             if (selectedParty) {
                 axios.get(`http://localhost:5000/party/select`, {params: { partyId: selectedParty }})
                 .then(res => {
-                    console.log('partyselect1: ', res.data[0]);
+                    // console.log('partyselect1: ', res.data[0]);
                     setPartyValue(res.data[0]);
+                    setSelectedChildName(res.data[0].childName);
+                    setSelectedYear(res.data[0].childYears);
+
                     setIsEdit(false);
                 })
                 .catch(err => console.log(err));
@@ -112,9 +116,6 @@ function CreateCard() {
     }
 
     const handleEdit = () => {
-        // if (!partyValue.partyContact1) {
-        //     setPartyValue({ ...partyValue, partyContact1: partyValue.userPhone});
-        // }
         setIsEdit(true);
     }
 
@@ -127,7 +128,6 @@ function CreateCard() {
     const handleUpdate = (event) => {
         event.preventDefault();
         setErrValidation([]);
-        console.log('partyValue update: ', partyValue);
 
         const updatedValues = { ...partyValue };
         const partyId = selectedParty;
@@ -135,7 +135,7 @@ function CreateCard() {
         axios.put(`http://localhost:5000/party/update/${partyId}`, updatedValues)
         .then(res => {
             setPartyValue(res.data[0]);
-            console.log('partyup: ', res.data[0]);
+            // console.log('partyup: ', res.data[0]);
             setErrValidation([]);
             setIsEdit(false);
         })
@@ -155,6 +155,14 @@ function CreateCard() {
         setQrCodeImg(qrImg);
     }
 
+
+    const getOrdinalSuffix = (num) => {
+        if (num === 1) return 'st';
+        if (num === 2) return 'nd';
+        if (num === 3) return 'rd';
+        return 'th';
+    };
+
     const selectTemplate = (imgSrc, qrCodeImg, police, color, yStart) => {
     
         const canvas = canvasRef.current;
@@ -167,8 +175,8 @@ function CreateCard() {
         // Set the canvas resolution to a higher value
         canvas.width = 350 * dpr;
         canvas.height = 500 * dpr;
-        canvas.style.width = "350px";
-        canvas.style.height = "500px";
+        canvas.style.width = '350px';
+        canvas.style.height = '500px';
         
         // 高解像度スケールを適用
         ctx.scale(dpr, dpr);
@@ -182,8 +190,8 @@ function CreateCard() {
     
             // パーティー情報を描画
             ctx.fillStyle = color;
-            ctx.textAlign = "center";
-            ctx.textBaseline = "top";
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
     
             const centerX = canvas.width / (2 * dpr); // ★キャンバスの中央を計算
             let yOffset = yStart; // テキストの開始位置
@@ -196,9 +204,9 @@ function CreateCard() {
                 
                 // もしテキストが幅を超えるなら2行に分ける（簡易版）
                 if (textWidth > 300) {
-                    const words = text.split(" ");
-                    let line1 = words.slice(0, Math.ceil(words.length / 2)).join(" ");
-                    let line2 = words.slice(Math.ceil(words.length / 2)).join(" ");
+                    const words = text.split(' ');
+                    let line1 = words.slice(0, Math.ceil(words.length / 2)).join(' ');
+                    let line2 = words.slice(Math.ceil(words.length / 2)).join(' ');
                     ctx.fillText(line1, centerX, y);
                     ctx.fillText(line2, centerX, y + lineHeight);
                     return y + lineHeight * 2;
@@ -211,13 +219,13 @@ function CreateCard() {
             // 名前の表示
             if (partyValue.childName) {
                 yOffset = drawTextWithWrap(`${partyValue.childName}'s`, yOffset, 50);
-                yOffset += 30; // ★ 名前と年齢の間にスペースを作る
+                yOffset += 30;
             }
 
             // 年齢の表示
             if (partyValue.childYears) {
-                yOffset = drawTextWithWrap(`${partyValue.childYears}th Birthday Party`, yOffset, 35);
-                yOffset += 30; // ★ 年齢と日付の間にもスペースを作る
+                yOffset = drawTextWithWrap(`${partyValue.childYears}${getOrdinalSuffix(partyValue.childYears)} Birthday Party`, yOffset, 35);
+                yOffset += 30;
             }
 
             // 日付の表示
@@ -246,7 +254,6 @@ function CreateCard() {
                 yOffset += 5;
             }
 
-            // 連絡先の表示
             if (partyValue.partyContact1) {
                 let contactText = partyValue.partyContact1;
                 if (partyValue.partyContact2) {
@@ -269,12 +276,12 @@ function CreateCard() {
         
                     // RSVP の描画（QRコードの上）
                     ctx.font = `10px ${police}`; 
-                    ctx.textAlign = "center"; // 中央揃え
-                    ctx.fillText("RSVP", qrX + qrSize / 2, qrY - 13);
+                    ctx.textAlign = 'center'; // 中央揃え
+                    ctx.fillText('RSVP', qrX + qrSize / 2, qrY - 13);
                 
                     // QRコードの下に「Scan for confirmation」を描画
                     ctx.font = `9px ${police}`; 
-                    ctx.fillText("Scan for confirmation", qrX + qrSize / 2, qrY + qrSize + 5);
+                    ctx.fillText('Scan for confirmation', qrX + qrSize / 2, qrY + qrSize + 5);
                 };
             }
         };
@@ -306,6 +313,117 @@ function CreateCard() {
     }
 
 
+    const createFolder = async (folderName) => {
+    
+        if (!token) {
+            alert('Please log in to Google');
+            return;
+        }
+    
+        const metadata = {
+            name: folderName,
+            mimeType: 'application/vnd.google-apps.folder',
+        };
+    
+        const response = await fetch('https://www.googleapis.com/drive/v3/files', {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(metadata),
+        });
+    
+        const result = await response.json();
+        if (result.id) {
+            // console.log('Folder created: ', result);
+            return result.id;
+        } else {
+            console.error('Folder creation failed: ', result);
+            return null;
+        }
+    };
+
+
+    const uploadToDrive = async (invitationFile, IdFolder) => {
+
+        if (!token) {
+            alert('Please log in to Google');
+            return;
+        }
+    
+        const metadata = {
+            name: invitationFile.name,
+            mimeType: invitationFile.type,
+            parents: [IdFolder],
+        };
+    
+        const formData = new FormData();
+        formData.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+        formData.append('file', invitationFile);
+    
+        const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            body: formData,
+        });
+    
+        const result = await response.json();
+        if (result.id) {
+            // console.log('invitation uploaded: ', result);
+            // console.log('invitationFile id: ', result.id);
+            return result.id;
+        } else {
+            console.error('invitationFile upload failed: ', result);
+        }
+    };
+
+
+    const getCanvasBlob = (canvas) => {
+        return new Promise((resolve) => {
+            canvas.toBlob(resolve, 'image/png');
+        });
+    };
+
+
+    const saveInvitation = async () => {
+        try {
+            setIsSave(true);
+
+            const partyId = selectedParty;
+            const folderName = `${partyValue.childName}_${partyValue.childYears}${getOrdinalSuffix(partyValue.childYears)}BirthdayParty`;
+            
+            let IdFolder = '';
+            if (partyValue.partyIdFolder) {
+                IdFolder = partyValue.partyIdFolder;
+            } else {
+                IdFolder = await createFolder(folderName);
+                if (!IdFolder) return;
+
+                await axios.put(`http://localhost:5000/party/updateFolder/${partyId}`, { IdFolder });
+                console.log('Folder ID updated to DB:');
+            }
+
+            const canvas = canvasRef.current;
+            if (!canvas) return;
+    
+            const blob = await getCanvasBlob(canvas);
+            if (!blob) return;
+    
+            const invitationFile = new File([blob], 'invitation.png', { type: 'image/png' });
+            const IdInvitation = await uploadToDrive(invitationFile, IdFolder);
+            if (!IdInvitation) return;
+
+            await axios.put(`http://localhost:5000/party/updateInvitation/${partyId}`, { IdInvitation });
+            // console.log('Invitation Id updated to DB:');
+
+            setIsSave(false);
+        } catch (error) {
+            console.error('Error in saveInvitation:', error);
+        }
+    };
 
     return (
 
@@ -542,7 +660,7 @@ function CreateCard() {
                                     onClick={() => selectTemplate(card_2, qrCodeImg, 'Alice', '#e2377a', 220)} />
 
                             <img src={card_3} className='img-thumbnail ms-1 me-1  mb-3' style={{ width: "150px" }}
-                                    onClick={() => selectTemplate(card_3, qrCodeImg, 'Century Gothic', '#0ff486', 240)} />
+                                    onClick={() => selectTemplate(card_3, qrCodeImg, 'Arial', '#0ff486', 240)} />
 
                             {/* <img src={card_4} className='img-thumbnail ms-1 me-1  mb-3' style={{ width: "150px" }}
                                     onClick={() => selectTemplate(card_4, qrCodeImg, 'Consolas', 'black')} />
@@ -551,10 +669,10 @@ function CreateCard() {
                                     onClick={() => selectTemplate(card_5, qrCodeImg, 'Alice', '#8b55f7')} /> */}
 
                             <img src={card_9} className='img-thumbnail ms-1 me-1  mb-3' style={{ width: "150px" }}
-                                    onClick={() => selectTemplate(card_9, qrCodeImg, 'Century Gothic', '#6f2eee', 240)} />
+                                    onClick={() => selectTemplate(card_9, qrCodeImg, 'Arial', '#6f2eee', 240)} />
 
                             <img src={card_10} className='img-thumbnail ms-1 me-1  mb-3' style={{ width: "150px" }}
-                                    onClick={() => selectTemplate(card_10, qrCodeImg, 'Century Gothic', '#e2377a', 230)} />
+                                    onClick={() => selectTemplate(card_10, qrCodeImg, 'Arial', '#e2377a', 230)} />
 
                             <img src={card_11} className='img-thumbnail ms-1 me-1  mb-3' style={{ width: "150px" }}
                                     onClick={() => selectTemplate(card_11, qrCodeImg, 'Arial', 'black', 240)} />
@@ -572,7 +690,7 @@ function CreateCard() {
                                     onClick={() => selectTemplate(card_15, qrCodeImg, 'Arial', '#e2377a', 220)} />
 
                             <img src={card_16} className='img-thumbnail ms-1 me-1  mb-3' style={{ width: "150px" }}
-                                    onClick={() => selectTemplate(card_16, qrCodeImg, 'Century Gothic', '#fdab2e', 230)} />
+                                    onClick={() => selectTemplate(card_16, qrCodeImg, 'Arial', '#fdab2e', 230)} />
 
                             <img src={card_17} className='img-thumbnail ms-1 me-1  mb-3' style={{ width: "150px" }}
                                     onClick={() => selectTemplate(card_17, qrCodeImg, 'Times New Roman', '#013477', 240)} />
@@ -602,8 +720,20 @@ function CreateCard() {
                     <div className='mt-3'>
                         <canvas ref={canvasRef} className='border' style={{ width: '350px', height: '500px' }}></canvas>
                     </div>
+                    <div className='d-flex justify-content-start m-3'>
+                        <button className='btn btn-outline-secondary' onClick={handleDownload}>
+                            Download
+                        </button>
+                        <button onClick={saveInvitation} disabled={!token} className="btn btn-outline-primary ms-4">
+                            Save to Google Drive
+                        </button>
+                    </div>
 
-                    <button className='btn btn-outline-secondary' onClick={handleDownload}>Download</button>
+                    <div className='m-3'>
+                        {isSave ? <p>Saving to Google Drive...</p> : ''}
+
+                    </div>
+
                     <div>
                         <div>
                             {/* create QRcode */}

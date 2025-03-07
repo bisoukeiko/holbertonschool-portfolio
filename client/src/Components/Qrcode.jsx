@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
-import rsvp from '../assets/rsvp.png';
 
 
 function Qrcode({ partyId, onQeCodeGenerated }) {

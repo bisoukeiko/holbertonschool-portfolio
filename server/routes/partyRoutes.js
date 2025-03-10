@@ -9,6 +9,6 @@ router.post('/insert', insertParty);
 router.put('/update/:partyId', updateParty);
 router.put('/updateFolder/:partyId', updateFolder);
 router.put('/updateInvitation/:partyId', updateInvitation);
-router.delete('/delete/:partyId', deleteParty);
+router.put('/delete/:partyId', deleteParty);
 
 export default router;

@@ -173,13 +173,6 @@ function Party() {
     };
 
 
-    // const handleChange = (partyId, field, value) => {
-    //     setPartyValue({ ...partyValue, [field]: value});
-    //     setPartyList(partyList.map(party =>
-    //         party.idParty === partyId ? {...party, [field]: value} : party
-    //     ));
-
-    // };
     const handleChange = (field, value) => {
         setPartyValue({ ...partyValue, [field]: value});
     };
@@ -200,8 +193,6 @@ function Party() {
             });
 
         setIsAdd(false);
-        setSelectedYear('');
-        setSelectedParty('');
         setErrValidation([]);
 
         if (partyId) {
@@ -268,6 +259,16 @@ function Party() {
         axios.put(`http://localhost:5000/party/update/${partyId}`, {...updatedValues,  'userId': userId })
         .then(res => {
             console.log("Party updated successfully:", res.data);
+            if (res.data.length !== 0) {
+                // console.log(res.data);
+                const childData = res.data.parties.map(child => ({
+                  ...child, isEdit: false
+                }));
+                setChildList(childData);
+              } else {
+                setChildList([]);  
+              }
+
             const childData = res.data.parties.map(child => ({
                 ...child,
                 child_parties: child.child_parties.map(party => ({...party, isEdit: false}))
@@ -275,7 +276,7 @@ function Party() {
             const targetChild = childData.find(child => child.id_child === selectedChildId);
 
             setPartyList(targetChild.child_parties);
-            setYearList(targetChild.child_parties);
+            setYearList(targetChild.child_parties);      
 
             setPartyValue({
                 partyId: '',
@@ -508,13 +509,13 @@ function Party() {
                                             <Form.Control
                                                 type='date'
                                                 value={partyValue.partyDate || new Date().toISOString().split('T')[0]}
-                                                onChange={event => handleChange(selectedParty, 'partyDate', event.target.value)}
+                                                onChange={event => handleChange('partyDate', event.target.value)}
                                             />
                                             <Form.Label className='mt-2'>From:</Form.Label>
                                             <Form.Select
                                                 type='time'
                                                 value={partyValue.partyTimeFrom || '14:00'}
-                                                onChange={(event) => handleChange(selectedParty, 'partyTimeFrom', event.target.value)}
+                                                onChange={(event) => handleChange('partyTimeFrom', event.target.value)}
                                             >
                                                 {[...Array(24)].map((_, hour) => (
                                                     [...Array(4)].map((_, min) => {
@@ -528,7 +529,7 @@ function Party() {
                                             <Form.Select
                                                 type='time'
                                                 value={partyValue.partyTimeTo || '17:00'}
-                                                onChange={(event) => handleChange(selectedParty, 'partyTimeTo', event.target.value)}
+                                                onChange={(event) => handleChange('partyTimeTo', event.target.value)}
                                             >
                                                 {[...Array(24)].map((_, hour) => (
                                                     [...Array(4)].map((_, min) => {
@@ -542,19 +543,19 @@ function Party() {
                                         
                                         <label  className='mt-2' htmlFor='partyPlace'>Location: </label>
                                         <input id='partyPlace' type='text' placeholder=''className='form-control' value={partyValue.partyPlace}
-                                            onChange={event => handleChange(selectedParty, 'partyPlace', event.target.value)} />
+                                            onChange={event => handleChange('partyPlace', event.target.value)} />
                                         <input id='partyPlace2' type='text' placeholder=''className='form-control mt-1' value={partyValue.partyPlace2}
-                                            onChange={event => handleChange(selectedParty, 'partyPlace2', event.target.value)} />
+                                            onChange={event => handleChange('partyPlace2', event.target.value)} />
                                         <input id='partyPlace3' type='text' placeholder=''className='form-control mt-1' value={partyValue.partyPlace3}
-                                            onChange={event => handleChange(selectedParty, 'partyPlace3', event.target.value)} />
+                                            onChange={event => handleChange('partyPlace3', event.target.value)} />
 
                                         {/* <label  className='mt-2' htmlFor='partyContact1'>Contact1: </label>
                                         <input id='partyContact1' type='text' placeholder=''className='form-control' value={partyValue.partyContact1}
-                                            onChange={event => handleChange(selectedParty, 'partyContact1', event.target.value)} />
+                                            onChange={event => handleChange('partyContact1', event.target.value)} />
 
                                         <label  className='mt-2' htmlFor='partyContact2'>Contact2: </label>
                                         <input id='partyContact2' type='text' placeholder=''className='form-control' value={partyValue.partyContact2}
-                                            onChange={event => handleChange(selectedParty, 'partyContact2', event.target.value)} /> */}
+                                            onChange={event => handleChange('partyContact2', event.target.value)} /> */}
                                     </div>
                                     <div className='d-flex justify-content-end'>
 

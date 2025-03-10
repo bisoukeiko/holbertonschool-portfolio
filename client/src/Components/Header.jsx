@@ -63,7 +63,21 @@ function Header() {
 
   return (
     <header className="bg-white shadow-sm">
-      <h1 className='fw-semibold text-center mt-5'>HAPPY CANDLES</h1>
+      <h1 className='fw-semibold text-center mt-4 display-2' style={{ fontFamily: 'cursive' }}>
+        <span style={{ color: 'red' }}>H</span>
+        <span style={{ color: 'orange' }}>a</span>
+        <span style={{ color: 'yellow' }}>p</span>
+        <span style={{ color: 'green' }}>p</span>
+        <span style={{ color: 'blue' }}>y</span>
+        &nbsp;
+        <span style={{ color: 'purple' }}>C</span>
+        <span style={{ color: 'pink' }}>a</span>
+        <span style={{ color: 'cyan' }}>n</span>
+        <span style={{ color: 'lime' }}>d</span>
+        <span style={{ color: 'magenta' }}>l</span>
+        <span style={{ color: 'gold' }}>e</span>
+        <span style={{ color: 'deepskyblue' }}>s</span>
+      </h1>
       <nav className="container d-flex justify-content-between align-items-center py-3">
         {/* ナビゲーションメニュー */}
         <ul className="nav">
@@ -95,7 +109,7 @@ function Header() {
                 ) : (
                   <button className='btn btn-light d-flex align-items-center shadow-sm border rounded' onClick={handleLogout}>
                       <img src="https://img.icons8.com/color/48/000000/google-logo.png" alt="Google Logo" class="me-2" width="20" height="20"/>
-                      <span className='text-danger'>Logout</span>
+                      <span className=''>Logout</span>
                   </button>
                 )}
             </GoogleOAuthProvider>

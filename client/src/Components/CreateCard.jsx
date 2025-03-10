@@ -9,8 +9,8 @@ import { useUser } from './UserContext';
 import card_1 from '../assets/template/card_1.png';
 import card_2 from '../assets/template/card_2.png';
 import card_3 from '../assets/template/card_3.jpeg';
-import card_4 from '../assets/template/card_4.jpeg';
-import card_5 from '../assets/template/card_5.jpeg';
+// import card_4 from '../assets/template/card_4.jpeg';
+// import card_5 from '../assets/template/card_5.jpeg';
 import card_9 from '../assets/template/card_9.png';
 import card_10 from '../assets/template/card_10.png';
 import card_11 from '../assets/template/card_11.png';
@@ -34,6 +34,7 @@ function CreateCard() {
 
     const [isEdit, setIsEdit] = useState(false);
     const [isSave, setIsSave] = useState(false);
+    const [isSelect, setIsSelect] = useState(false);
     const [errValidation, setErrValidation] = useState([]);
 
     const [childList, setChildList] = useState([]);
@@ -56,6 +57,7 @@ function CreateCard() {
         childName: '',
         childYears: '',
         partyIdFolder: '',
+        partyIdInvitation: ''
     });
 
     // canvas, QRcode
@@ -83,6 +85,7 @@ function CreateCard() {
                     setSelectedYear(res.data[0].childYears);
 
                     setIsEdit(false);
+                    setIsSelect(false);
                 })
                 .catch(err => console.log(err));
             }
@@ -285,11 +288,14 @@ function CreateCard() {
                 };
             }
         };
+        setIsSelect(true);
     };
 
 
     const handleDownload = () => {
         try {
+            if (!isSelect) return;
+
             const canvas = canvasRef.current;
             if (!canvas) return;
 
@@ -390,6 +396,8 @@ function CreateCard() {
 
     const saveInvitation = async () => {
         try {
+            if (!isSelect) return;
+        
             setIsSave(true);
 
             const partyId = selectedParty;
@@ -403,7 +411,7 @@ function CreateCard() {
                 if (!IdFolder) return;
 
                 await axios.put(`http://localhost:5000/party/updateFolder/${partyId}`, { IdFolder });
-                console.log('Folder ID updated to DB:');
+                // console.log('Folder ID updated to DB:');
             }
 
             const canvas = canvasRef.current;
@@ -493,7 +501,7 @@ function CreateCard() {
                                 <div className='card-header p-4'>    
                                     <div>
                                         <div className='d-flex justify-content-center align-items-end'>
-                                        {userId ? (
+                                        {partyValue.childName ? (
                                             <div>
                                                 <div className='fs-3 me-4'>{partyValue.childName}</div>
                                                 <div className='fs-5'>{partyValue.childYears} years old</div>
@@ -721,11 +729,12 @@ function CreateCard() {
                         <canvas ref={canvasRef} className='border' style={{ width: '350px', height: '500px' }}></canvas>
                     </div>
                     <div className='d-flex justify-content-start m-3'>
+
+                        <button onClick={saveInvitation} disabled={!token} className="btn btn-outline-primary me-4">
+                            Save
+                        </button>
                         <button className='btn btn-outline-secondary' onClick={handleDownload}>
                             Download
-                        </button>
-                        <button onClick={saveInvitation} disabled={!token} className="btn btn-outline-primary ms-4">
-                            Save to Google Drive
                         </button>
                     </div>
 

@@ -162,7 +162,7 @@ function Child() {
 
     <div className='d-flex ustify-content-center align-items-center mt-1'>
       <div className='w-100 p-3'>
-        <div className='d-flex justify-content-start ms-4'>
+        <div className='d-flex justify-content-start ms-5 mt-5'>
           {!isAdd && (
             <button onClick={() => setIsAdd(true)} className='btn btn-outline-success mb-2 me1'> + Add a new child</button>
           )}
@@ -300,7 +300,7 @@ function Child() {
                       )}
                   </div>
                   <span className='text-end text-success me-3 mb-3'style={{ cursor: 'pointer' }}
-                        onClick={() => navigate('/party')}>
+                        onClick={() => navigate('/party', { state: { fgAdd: true } })}>
                       + add a new party
                   </span>
                 </div>

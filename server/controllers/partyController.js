@@ -16,7 +16,8 @@ export const selectPartyByChild = (req, res) => {
                  FROM TB_PARTY AS TBP,
                       TB_CHILD AS TBC
                 WHERE TBC.id_child = ?
-                  AND TBC.id_child = TBP.id_child;`
+                  AND TBC.id_child = TBP.id_child
+                  AND TBP.delete_at IS NULL;`
 
   db.query(sql, [childId], (err, result)=> {
     if(err) {
@@ -51,7 +52,8 @@ export const selectParty = (req, res) => {
                  FROM TB_PARTY AS TBP,
                       TB_CHILD AS TBC
                 WHERE TBP.id_party = ?
-                  AND TBP.id_child = TBC.id_child;`
+                  AND TBP.id_child = TBC.id_child
+                  AND TBP.delete_at IS NULL;`
 
   db.query(sql, [partyId], (err, result)=> {
     if(err) {
@@ -204,19 +206,14 @@ export const updateInvitation = (req, res) => {
 };
 
 
-
 // delete party by partyID
-export const deleteParty =async  (req, res) => {
+export const deleteParty = (req, res) => {
   const { userId }  = req.body;
   const partyId = req.params.partyId;
 
-  try {
-    // delete todos by partyID
-    await deleteTodoByParty(partyId);
-    await deleteShoppingByParty(partyId);
-    await deleteGuestByParty(partyId);
-
-    const sql = 'DELETE FROM TB_PARTY WHERE id_party = ?;';
+  const sql = `UPDATE TB_PARTY SET
+                      delete_at = CURRENT_TIMESTAMP
+                WHERE id_party = ?;`;
 
     db.query(sql, [partyId], (err, result) => {
       if(err) {
@@ -227,7 +224,33 @@ export const deleteParty =async  (req, res) => {
         getChildParty(req, res);
       }
     }); 
-  } catch (err) {
-    return res.status(500).json({ Message: 'Error deleting todos', Error: err });
-  }
+
 };
+
+
+// // delete party by partyID
+// export const deleteParty =async  (req, res) => {
+//   const { userId }  = req.body;
+//   const partyId = req.params.partyId;
+
+//   try {
+//     // delete todos by partyID
+//     await deleteTodoByParty(partyId);
+//     await deleteShoppingByParty(partyId);
+//     await deleteGuestByParty(partyId);
+
+//     const sql = 'DELETE FROM TB_PARTY WHERE id_party = ?;';
+
+//     db.query(sql, [partyId], (err, result) => {
+//       if(err) {
+//         console.error("Database Error:", err);
+//         return res.json({Message: 'Error delete party', Error: err});
+//       } else {
+//         req.query.userId = userId;
+//         getChildParty(req, res);
+//       }
+//     }); 
+//   } catch (err) {
+//     return res.status(500).json({ Message: 'Error deleting todos', Error: err });
+//   }
+// };

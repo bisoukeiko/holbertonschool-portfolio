@@ -5,13 +5,16 @@ import TodoValidator from '../validators/TodoValidator.js';
 
 export const getTodos = (req, res) => {
   const { partyId }  = req.query;
-    const sql = `SELECT id_task,
-                        id_party,
-                        task,
-                        fg_done
-                   FROM TB_TODO
-                  WHERE id_party = ?
-               ORDER BY created_at desc;`
+    const sql = `SELECT TBT.id_task,
+                        TBT.id_party,
+                        TBT.task,
+                        TBT.fg_done
+                   FROM TB_TODO AS TBT,
+                        TB_PARTY AS TBP
+                  WHERE TBT.id_party = ?
+                    AND TBT.id_party = TBP.id_party
+                    AND TBP.delete_at IS NULL
+               ORDER BY TBT.created_at desc;`
   db.query(sql, [partyId], (err, result)=> {
       if(err) {
         console.error("Database Error:", err);

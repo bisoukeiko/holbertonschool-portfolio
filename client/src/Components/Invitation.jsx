@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
+import { jsPDF } from "jspdf";
 import { useNavigate } from 'react-router-dom';
 import { useUser } from './UserContext';
 
@@ -61,6 +62,46 @@ function Invitation({ partyId }) {
     };
     
 
+    const handlePrint = () => {
+        if (!imageUrl) {
+            return;
+        }
+    
+        const pdf = new jsPDF('l', 'mm', 'a4'); 
+    
+        // 画像の幅と高さを指定
+        const imageWidth = 130; // 画像の幅
+        const imageHeight = 180; // 画像の高さ（縦長の画像を収める）
+    
+        const padding = 10; // 画像と画像の間の余白
+    
+        pdf.addImage(imageUrl, 'PNG', 10, 10, imageWidth, imageHeight);
+    
+        pdf.addImage(imageUrl, 'PNG', 10 + imageWidth + padding, 10, imageWidth, imageHeight);
+    
+        pdf.save('invitation.pdf');
+    };
+
+
+    const handleDownload = () => {
+        try {
+            if (!imageUrl) {
+                alert('Image is not loaded yet.');
+                return;
+            }
+    
+            // a タグを作成
+            const a = document.createElement('a');
+            a.href = imageUrl;  // 画像のURLをリンクとして設定
+            a.download = 'invitation.png';  // ダウンロードするファイル名を設定
+    
+            // a タグをクリックしてダウンロードを開始
+            a.click();
+        } catch (e) {
+            console.error(e);
+            alert(`Error: ${e}`);
+        }
+    };
 
 
   return (
@@ -70,13 +111,6 @@ function Invitation({ partyId }) {
             <div className='card-header'>
                     <div className='d-flex justify-content-between m-2'>
                         <h4 className='p-1'>Invitation</h4>
-                        <div className=' d-flex justify-content-end'>
-                            {partyIdInvitation && (
-                                <button type='button' class='btn btn-outline-primary' onClick={handleCreateCard}>
-                                    Modify Invitation Card
-                                </button>
-                            )}
-                        </div>
                     </div>
 
                 </div>
@@ -85,7 +119,20 @@ function Invitation({ partyId }) {
                         {partyIdInvitation ? (
                             <div>
                                 {imageUrl ? (
-                                    <img src={imageUrl} alt="Invitation" className="img-fluid rounded" />
+                                    <div>
+                                        <div className='d-flex justify-content-around mb-2'>
+                                            <button className='btn btn-outline-secondary' onClick={handlePrint}>
+                                                Print
+                                            </button>
+                                            <button className='btn btn-outline-secondary' onClick={handleDownload}>
+                                                Download
+                                            </button>
+                                            <button type='button' class='btn btn-outline-primary' onClick={handleCreateCard}>
+                                                Modify Invitation Card
+                                            </button>
+                                        </div>
+                                        <img src={imageUrl} alt="Invitation" className="img-fluid rounded" />
+                                    </div>
                                 ) : (
                                     <p>Loading Images...</p>
                                 )}

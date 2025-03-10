@@ -43,6 +43,7 @@ export const getChildParty = (req, res) => {
                  FROM TB_CHILD AS TBC
             LEFT JOIN TB_PARTY AS TBP 
                    ON TBC.id_child = TBP.id_child
+                  AND TBP.delete_at IS NULL
             LEFT JOIN TB_USER AS TBU
                    ON TBC.id_parent = TBU.id_user
                 WHERE TBU.id_user = ?

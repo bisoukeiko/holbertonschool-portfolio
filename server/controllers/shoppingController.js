@@ -5,13 +5,16 @@ import ShoppingValidator from '../validators/ShoppingValidator.js';
 
 export const getShopping = (req, res) => {
   const { partyId }  = req.query;
-    const sql = `SELECT id_item,
-                        id_party,
-                        shop_item,
-                        shop_fg_done
-                   FROM TB_SHOPPING
-                  WHERE id_party = ?
-               ORDER BY created_at desc;`
+    const sql = `SELECT TBS.id_item,
+                        TBS.id_party,
+                        TBS.shop_item,
+                        TBS.shop_fg_done
+                   FROM TB_SHOPPING AS TBS,
+                        TB_PARTY AS TBP
+                  WHERE TBS.id_party = ?
+                    AND TBS.id_party = TBP.id_party
+                    AND TBP.delete_at IS NULL
+               ORDER BY TBS.created_at desc;`
   db.query(sql, [partyId], (err, result)=> {
       if(err) {
         console.error("Database Error:", err);

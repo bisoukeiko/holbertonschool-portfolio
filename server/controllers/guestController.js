@@ -14,9 +14,12 @@ export const getGuestList = (req, res) => {
                         TBG.parent_email AS parentEmail,
                         TBGP.fg_attend AS fgAttend
                    FROM TB_GUEST AS TBG,
+                        TB_PARTY AS TBP,
                         TB_PARTY_GUEST AS TBGP
                   WHERE TBGP.id_party = ?
+                    AND TBGP.id_party = TBP.id_party
                     AND TBGP.id_guest = TBG.id_guest
+                    AND TBP.delete_at IS NULL
                ORDER BY guestName;`
   db.query(sql, [partyId], (err, result)=> {
       if(err) {

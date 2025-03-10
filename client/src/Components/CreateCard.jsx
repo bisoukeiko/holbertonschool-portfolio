@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import Qrcode from './Qrcode';
+import { jsPDF } from "jspdf";
 import {Dropdown, Form } from 'react-bootstrap';
 
 import { useLocation } from 'react-router-dom';
@@ -42,7 +43,8 @@ function CreateCard() {
     const [selectedChildName, setSelectedChildName] = useState(''); // dropdown child name
     const [selectedYear, setSelectedYear] = useState('');// dropdown year
     const [selectedParty, setSelectedParty] = useState(partyId);// dropdown year choise -> party id set
-    const [noPartiesMsg, setNoPartiesMsg] = useState(''); 
+    const [noPartiesMsg, setNoPartiesMsg] = useState('');
+    const [msgImg, setMsgImg] = useState('');
 
     const [partyValue, setPartyValue] = useState({
         partyDate: '',
@@ -289,12 +291,16 @@ function CreateCard() {
             }
         };
         setIsSelect(true);
+        setMsgImg('');
     };
 
 
     const handleDownload = () => {
         try {
-            if (!isSelect) return;
+            if (!isSelect){
+                setMsgImg('Please select Template.');
+                return;
+            }
 
             const canvas = canvasRef.current;
             if (!canvas) return;
@@ -314,7 +320,7 @@ function CreateCard() {
         }
         catch(e){
             console.error(e);
-            alert(`エラー:${ e }`);
+            alert(`error: ${ e }`);
         }
     }
 
@@ -396,9 +402,13 @@ function CreateCard() {
 
     const saveInvitation = async () => {
         try {
-            if (!isSelect) return;
+            if (!isSelect){
+                setMsgImg('Please select Template.');
+                return;
+            }
         
             setIsSave(true);
+            setMsgImg('Saving...');
 
             const partyId = selectedParty;
             const folderName = `${partyValue.childName}_${partyValue.childYears}${getOrdinalSuffix(partyValue.childYears)}BirthdayParty`;
@@ -428,10 +438,51 @@ function CreateCard() {
             // console.log('Invitation Id updated to DB:');
 
             setIsSave(false);
+            setMsgImg('');
+
         } catch (error) {
             console.error('Error in saveInvitation:', error);
         }
     };
+
+
+    const handlePrint = () => {
+        if (!isSelect){
+            setMsgImg('Please select Template.');
+            return;
+        }
+
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+    
+        const imgData = canvas.toDataURL('image/png');
+    
+        // PDFの設定（A4 横向き）
+        const pdf = new jsPDF({
+            orientation: 'landscape',
+            unit: 'mm',
+            format: 'a4',
+        });
+    
+        const pageWidth = pdf.internal.pageSize.getWidth(); // A4横の幅
+        const pageHeight = pdf.internal.pageSize.getHeight(); // A4横の高さ
+    
+        const imgWidth = pageWidth / 2 - 10; // 2枚並べるため、幅を半分に
+        const imgHeight = imgWidth * (canvas.height / canvas.width); // 比率を維持して高さを調整
+    
+        const margin = 10;
+    
+        // 左側に1枚目
+        pdf.addImage(imgData, 'PNG', margin, (pageHeight - imgHeight) / 2, imgWidth, imgHeight);
+        // 右側に2枚目
+        pdf.addImage(imgData, 'PNG', pageWidth / 2 + margin / 2, (pageHeight - imgHeight) / 2, imgWidth, imgHeight);
+    
+        // 印刷用ダイアログを開く
+        pdf.autoPrint();
+        window.open(pdf.output('bloburl'), '_blank');
+    };
+    
+        
 
     return (
 
@@ -660,15 +711,12 @@ function CreateCard() {
                         </div>
 
                         {/* template images */}
-                        <div className='d-flex flex-wrap p-3'>
+                        <div className='d-flex flex-wrap p-3' style={{ maxHeight: '600px', overflowY: 'auto' }}>
                             <img src={card_1} className='img-thumbnail ms-1 me-1  mb-3' style={{ width: "150px" }}
                                     onClick={() => selectTemplate(card_1, qrCodeImg, 'Arial', '#e2377a', 220)} />
 
                             <img src={card_2} className='img-thumbnail ms-1 me-1  mb-3' style={{ width: "150px" }}
                                     onClick={() => selectTemplate(card_2, qrCodeImg, 'Alice', '#e2377a', 220)} />
-
-                            <img src={card_3} className='img-thumbnail ms-1 me-1  mb-3' style={{ width: "150px" }}
-                                    onClick={() => selectTemplate(card_3, qrCodeImg, 'Arial', '#0ff486', 240)} />
 
                             {/* <img src={card_4} className='img-thumbnail ms-1 me-1  mb-3' style={{ width: "150px" }}
                                     onClick={() => selectTemplate(card_4, qrCodeImg, 'Consolas', 'black')} />
@@ -679,8 +727,14 @@ function CreateCard() {
                             <img src={card_9} className='img-thumbnail ms-1 me-1  mb-3' style={{ width: "150px" }}
                                     onClick={() => selectTemplate(card_9, qrCodeImg, 'Arial', '#6f2eee', 240)} />
 
+                            <img src={card_3} className='img-thumbnail ms-1 me-1  mb-3' style={{ width: "150px" }}
+                                    onClick={() => selectTemplate(card_3, qrCodeImg, 'Arial', '#0ff486', 240)} />
+
                             <img src={card_10} className='img-thumbnail ms-1 me-1  mb-3' style={{ width: "150px" }}
                                     onClick={() => selectTemplate(card_10, qrCodeImg, 'Arial', '#e2377a', 230)} />
+
+                            <img src={card_20} className='img-thumbnail ms-1 me-1  mb-3' style={{ width: "150px" }}
+                                    onClick={() => selectTemplate(card_20, qrCodeImg, 'Impact', 'black', 220)} />
 
                             <img src={card_11} className='img-thumbnail ms-1 me-1  mb-3' style={{ width: "150px" }}
                                     onClick={() => selectTemplate(card_11, qrCodeImg, 'Arial', 'black', 240)} />
@@ -709,39 +763,44 @@ function CreateCard() {
                             <img src={card_19} className='img-thumbnail ms-1 me-1  mb-3' style={{ width: "150px" }}
                                     onClick={() => selectTemplate(card_19, qrCodeImg, 'Impact', '#545454', 240)} />
 
-                            <img src={card_20} className='img-thumbnail ms-1 me-1  mb-3' style={{ width: "150px" }}
-                                    onClick={() => selectTemplate(card_20, qrCodeImg, 'Impact', 'black', 220)} />
 
                         </div>
 
                     </div>
                 </div>
                 <div className='col-md-4'>
-                        <div className='d-flex align-items-center mt-5 ms-2'>
+                        <div className='d-flex align-items-center mt-5 ms-4'>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-3-square" viewBox="0 0 16 16">
                                 <path d="M7.918 8.414h-.879V7.342h.838c.78 0 1.348-.522 1.342-1.237 0-.709-.563-1.195-1.348-1.195-.79 0-1.312.498-1.348 1.055H5.275c.036-1.137.95-2.115 2.625-2.121 1.594-.012 2.608.885 2.637 2.062.023 1.137-.885 1.776-1.482 1.875v.07c.703.07 1.71.64 1.734 1.917.024 1.459-1.277 2.396-2.93 2.396-1.705 0-2.707-.967-2.754-2.144H6.33c.059.597.68 1.06 1.541 1.066.973.006 1.6-.563 1.588-1.354-.006-.779-.621-1.318-1.541-1.318"/>
                                 <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm15 0a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"/>
                             </svg>
-                            <div className='ms-2'>Print out the invitation card.</div>
+                            <div className='ms-2'>Save and print out the invitation card.</div>
                         </div>
                     {/* create card */}
-                    <div className='mt-3'>
+                    <div className='mt-3 ms-4'>
                         <canvas ref={canvasRef} className='border' style={{ width: '350px', height: '500px' }}></canvas>
                     </div>
-                    <div className='d-flex justify-content-start m-3'>
-
-                        <button onClick={saveInvitation} disabled={!token} className="btn btn-outline-primary me-4">
-                            Save
+                    <div className='d-flex justify-content-start ms-5 mt-2'>
+                        {userId && (
+                            <button onClick={saveInvitation} disabled={!token} className="btn btn-outline-primary me-4">
+                                Save
+                            </button>
+                        )}
+                        <button className='btn btn-outline-secondary me-4' onClick={handlePrint}>
+                            Print
                         </button>
                         <button className='btn btn-outline-secondary' onClick={handleDownload}>
                             Download
                         </button>
                     </div>
-
-                    <div className='m-3'>
-                        {isSave ? <p>Saving to Google Drive...</p> : ''}
-
+                    <div>
+                        {msgImg && (
+                            <div className={`${isSave ? '' : 'text-danger'} m-5 mt-3`} style={{ whiteSpace: 'pre-wrap' }}>
+                                {msgImg}
+                            </div>
+                        )}
                     </div>
+
 
                     <div>
                         <div>

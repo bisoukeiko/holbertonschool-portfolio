@@ -14,6 +14,7 @@ function Party() {
 
     const location = useLocation();
     const { partyId } = location.state || {};
+    const { fgAdd } = location.state || false;
 
     const [childList, setChildList] = useState([]);
     const [selectedChildName, setSelectedChildName] = useState(''); // dropdown child name
@@ -45,7 +46,7 @@ function Party() {
         child_birthday: ''
     });
 
-    const [isAdd, setIsAdd] = useState(false);
+    const [isAdd, setIsAdd] = useState(fgAdd);
     const [isAddChild, setIsAddChild] = useState(false);
     const [errValidationChild, setErrValidationChild] = useState([]);
 
@@ -68,6 +69,11 @@ function Party() {
           } else {
             setChildList([]);
           }
+
+        if(fgAdd) {
+            handleAddParty();
+        }
+
     }, [userId]);
 
 
@@ -172,6 +178,17 @@ function Party() {
         ));
     };
 
+
+    const handleAddParty = () => {
+
+        setIsAdd(true);
+        setNoPartiesMsg('');
+        setPartyValue({
+            partyDate: new Date().toISOString().split('T')[0],
+            partyTimeFrom: '14:00',
+            partyTimeTo: '17:00',
+        });
+    }
 
     const handleChange = (field, value) => {
         setPartyValue({ ...partyValue, [field]: value});
@@ -309,28 +326,68 @@ function Party() {
         const isConfirmed = confirm('Your guest list, ToDo list, shopping list and invitations will also be deleted.');
 
         if(isConfirmed) {
-            axios.delete(`http://localhost:5000/party/delete/${partyId}`, {data: { userId: userId }})
+            axios.put(`http://localhost:5000/party/delete/${partyId}`, {data: { userId: userId }})
             .then(res => {
                 if (res.data.length !== 0) {
+                        // console.log(res.data);
+                        const childData = res.data.parties.map(child => ({
+                        ...child, isEdit: false
+                        }));
+                        setChildList(childData);
+                    } else {
+                        setChildList([]);  
+                    }
+        
                     const childData = res.data.parties.map(child => ({
                         ...child,
                         child_parties: child.child_parties.map(party => ({...party, isEdit: false}))
                     }));
-                    const targetChild = childData.find(child => child.id_child === selectedChildId);
-                    // console.log('delete', targetChild.child_parties);
-                    setPartyList(targetChild.child_parties);
-                    setYearList(targetChild.child_parties);
-                    setSelectedParty('');
-                    setSelectedYear('');
 
-                } else {
-                    setPartyList([]);  
-                }
+                    handleSelect(childData);
+                    const targetChild = childData.find(child => child.id_child === selectedChildId);
+        
+                    if (targetChild) {
+                        setPartyList(targetChild.child_parties);
+                        setYearList(targetChild.child_parties);      
+                    }
+
+                    setPartyValue({
+                        partyId: '',
+                        partyDate: '',
+                        partyTimeFrom: '',
+                        partyTimeTo: '',
+                        partyPlace: '',
+                        partyPlace2: '',
+                        partyPlace3: '',
+                        partyContact1: '',
+                        partyContact2: '',
+                        childName: ''
+                    });
+                    setErrValidation([]);
+
+
+                // if (res.data.length !== 0) {
+                //     const childData = res.data.parties.map(child => ({
+                //         ...child,
+                //         child_parties: child.child_parties.map(party => ({...party, isEdit: false}))
+                //     }));
+                //     const targetChild = childData.find(child => child.id_child === selectedChildId);
+                //     // console.log('delete', targetChild.child_parties);
+                //     setPartyList(targetChild.child_parties);
+                //     setYearList(targetChild.child_parties);
+                //     setSelectedParty('');
+                //     setSelectedYear('');
+
+                // } else {
+                //     setPartyList([]);  
+                // }
             })
             .catch(err => console.log(err));
         } else {
             return;   
         }
+
+
     };
 
 
@@ -446,7 +503,7 @@ function Party() {
                                     Cancel
                                 </button>
                             ) : (
-                                <button onClick={() => {setIsAdd(true); setNoPartiesMsg('');} }
+                                <button onClick={handleAddParty}
                                         className='btn btn-outline-success text ms-4 mb-3 p-2'
                                         style={{ width: '150px' }}>
                                     Add a new party
@@ -508,13 +565,15 @@ function Party() {
                                             <Form.Label>Date:</Form.Label>
                                             <Form.Control
                                                 type='date'
-                                                value={partyValue.partyDate || new Date().toISOString().split('T')[0]}
+                                                value={partyValue.partyDate}
+                                                // value={partyValue.partyDate || new Date().toISOString().split('T')[0]}
                                                 onChange={event => handleChange('partyDate', event.target.value)}
                                             />
                                             <Form.Label className='mt-2'>From:</Form.Label>
                                             <Form.Select
                                                 type='time'
-                                                value={partyValue.partyTimeFrom || '14:00'}
+                                                value={partyValue.partyTimeFrom}
+                                                // value={partyValue.partyTimeFrom || '14:00'}
                                                 onChange={(event) => handleChange('partyTimeFrom', event.target.value)}
                                             >
                                                 {[...Array(24)].map((_, hour) => (
@@ -528,7 +587,8 @@ function Party() {
                                             <Form.Label className='mt-2'>To:</Form.Label>
                                             <Form.Select
                                                 type='time'
-                                                value={partyValue.partyTimeTo || '17:00'}
+                                                value={partyValue.partyTimeTo}
+                                                // value={partyValue.partyTimeTo || '17:00'}
                                                 onChange={(event) => handleChange('partyTimeTo', event.target.value)}
                                             >
                                                 {[...Array(24)].map((_, hour) => (

@@ -115,7 +115,8 @@ export const insertParty = (req, res) => {
 
 // update party by party ID
 export const updateParty = (req, res) => {
-  const { partyDate, partyTimeFrom, partyTimeTo, partyPlace, partyPlace2, partyPlace3, partyContact1, partyContact2 } = req.body;
+  // console.log('req.body: ', req.body)
+  const { userId, partyDate, partyTimeFrom, partyTimeTo, partyPlace, partyPlace2, partyPlace3, partyContact1, partyContact2 } = req.body;
 
   const validator = new PartyValidator(partyDate, partyTimeFrom, partyTimeTo, partyPlace, partyPlace2, partyPlace3, partyContact1, partyContact2);
   if (!validator.validate()) {
@@ -148,12 +149,15 @@ export const updateParty = (req, res) => {
       console.error("Database Error:", err);
       return res.status(500).json({Message: 'Error update party', Error: err});
     } else {
-      req.query.userId = req.body.userId;
-      req.query.insertedUuid = partyId;
-      getChildParty(req, res);
-      // req.query.partyId = partyId;
-      // selectParty(req, res);
-      // return res.status(201).json({ message: 'User updated successfully' });
+
+      if(userId) {
+        req.query.userId = userId;
+        req.query.insertedUuid = partyId;
+        getChildParty(req, res);
+      } else {
+        req.query.partyId = partyId;
+        selectParty(req, res);
+      }
     }
   });
 }

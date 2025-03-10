@@ -227,7 +227,7 @@ export const deleteGuestByParty = (partyId) => {
 
 export const updateRsvp = (req, res) => {
     const { guestName, guestRelation, guestAllergy, otherInfo, parentPhone, parentEmail, partyId, fgAttend} = req.body;
-    console.log('up data: ', req.body);
+    // console.log('up data: ', req.body);
     const validator = new GuestValidator(guestName, guestRelation, guestAllergy, otherInfo, parentPhone, parentEmail);
     if (!validator.validate()) {
       return res.status(400).json({errors: validator.getErrors()});

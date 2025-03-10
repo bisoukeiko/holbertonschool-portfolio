@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import { useUser } from './UserContext';
 import User from './User';
 import Child from './Child';
@@ -13,7 +12,7 @@ function Home() {
 
     <div className='row text-center g-0'>
       <div className='col'>
-        <img src={home_3} className="img-fluid w-50" alt="" />
+        <img src={home_3} className="img-fluid w-100" alt="" />
       </div>
     </div>
     <div className='row g-0'>

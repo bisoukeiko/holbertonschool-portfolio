@@ -90,6 +90,12 @@ function CreateCard() {
                     setIsSelect(false);
                 })
                 .catch(err => console.log(err));
+            } else {
+                setPartyValue({
+                    partyDate: new Date().toISOString().split('T')[0],
+                    partyTimeFrom: '14:00',
+                    partyTimeTo: '17:00',
+                });
             }
         }
       }, [selectedParty, userId]);
@@ -592,13 +598,13 @@ function CreateCard() {
                                                     <Form.Label className='mb-0'>Date:</Form.Label>
                                                     <Form.Control
                                                         type='date'
-                                                        value={partyValue.partyDate || new Date().toISOString().split('T')[0]}
+                                                        value={partyValue.partyDate}
                                                         onChange={event => handleChange('partyDate', event.target.value)}
                                                     />
                                                     <Form.Label className='mt-1 mb-0'>From:</Form.Label>
                                                     <Form.Select
                                                         type='time'
-                                                        value={partyValue.partyTimeFrom || '15:00'}
+                                                        value={partyValue.partyTimeFrom}
                                                         onChange={(event) => handleChange('partyTimeFrom', event.target.value)}
                                                     >
                                                         {[...Array(24)].map((_, hour) => (
@@ -612,7 +618,7 @@ function CreateCard() {
                                                     <Form.Label className='mt-1 mb-0'>To:</Form.Label>
                                                     <Form.Select
                                                         type='time'
-                                                        value={partyValue.partyTimeTo || '17:00'}
+                                                        value={partyValue.partyTimeTo}
                                                         onChange={(event) => handleChange('partyTimeTo', event.target.value)}
                                                     >
                                                         {[...Array(24)].map((_, hour) => (
@@ -711,7 +717,7 @@ function CreateCard() {
                         </div>
 
                         {/* template images */}
-                        <div className='d-flex flex-wrap p-3' style={{ maxHeight: '600px', overflowY: 'auto' }}>
+                        <div className='d-flex flex-wrap p-3' style={{ maxHeight: '630px', overflowY: 'auto' }}>
                             <img src={card_1} className='img-thumbnail ms-1 me-1  mb-3' style={{ width: "150px" }}
                                     onClick={() => selectTemplate(card_1, qrCodeImg, 'Arial', '#e2377a', 220)} />
 

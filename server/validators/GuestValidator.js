@@ -35,15 +35,15 @@ class GuestValidator {
         }
     }
 
-    validateGusetPhone() {
+    validateGuestPhone() {
         const phoneRegex = /^\d{10}$/;
         // remove -, space
         const phoneReplace = this.parentPhone?.replace(/[-\s]/g, '');
 
         if (!this.parentPhone || this.parentPhone.trim() === '') {
-            this.errors.push('Parents phone numbre is required.')
+            this.errors.push("Parent's phone number is required.")
         } else if (!phoneRegex.test(phoneReplace)) {
-            this.errors.push('Please enter a valid telephone numbre.');
+            this.errors.push('Please enter a valid telephone number.');
         }
     }
 
@@ -61,7 +61,7 @@ class GuestValidator {
         this.validateGuestRelation();
         this.validateGuestAllergy();
         this.validateOtherInfo();
-        this.validateGusetPhone();
+        this.validateGuestPhone();
         this.validateGuestEmail();
 
         return this.errors.length === 0;

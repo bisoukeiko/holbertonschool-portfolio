@@ -14,7 +14,7 @@ export const getTodos = (req, res) => {
                   WHERE TBT.id_party = ?
                     AND TBT.id_party = TBP.id_party
                     AND TBP.delete_at IS NULL
-               ORDER BY TBT.created_at desc;`
+               ORDER BY TBT.created_at ASC;`
   db.query(sql, [partyId], (err, result)=> {
       if(err) {
         console.error("Database Error:", err);
@@ -132,4 +132,47 @@ export const deleteTodoByParty = (partyId) => {
       }
     });
   }); 
+};
+
+
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+export const addInitialTodos = async (partyId) => {
+  const initialTodos = [
+    'Create invitation card',
+    'Book the venue',
+    'Order or bake a birthday cake',
+    'Prepare decorations',
+    'Organize games',
+    'Prepare small gifts for guests',
+    'Confirm RSVPs'    
+  ];
+
+  const sql = `INSERT INTO TB_TODO 
+                  (id_task, id_party, task, fg_done) 
+               VALUES (?, ?, ?, ?);`;
+
+  try {
+    for (const task of initialTodos) {
+      const values = [uuidv4(), partyId, task, false];
+
+      // 各タスクに対して遅延を加える（例: 200msの遅延）
+      await delay(200); 
+
+      await new Promise((resolve, reject) => {
+        db.query(sql, values, (err, result) => {
+          if (err) {
+            console.error("Error inserting todo:", err);
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        });
+      });
+    }
+
+    return { message: "All tasks inserted in order" };
+  } catch (err) {
+    throw new Error("Error inserting tasks: " + err);
+  }
 };

@@ -61,6 +61,22 @@ db.query(sql, [childId], (err, result)=> {
 };
 
 
+export const getAttendCount = (req, res) => {
+  const { partyId }  = req.query;
+  const sql = `SELECT COUNT(fg_attend) AS count
+                 FROM TB_PARTY_GUEST
+                WHERE id_party = ?
+                  AND fg_attend = '1';`
+  db.query(sql, [partyId], (err, result)=> {
+      if(err) {
+        console.error("Database Error:", err);
+        return res.status(500).json({Message: 'Error select guest list', Error: err});
+      }
+      return res.status(201).json(result);
+    });
+};
+
+
 export const addGuest = async (req, res) => {
 
   let { partyId, idGuest, guestName, guestRelation, guestAllergy, otherInfo, parentPhone, parentEmail} = req.body;
@@ -169,10 +185,7 @@ export const updateGuest = (req, res) => {
 
 export const updateGuestFlag = (req, res) => {
   const id = req.params.id;
-
   const { partyId, idGuest, fgAttend} = req.body;
-
-  console.log('partyId: ', partyId);
 
   const sql = `UPDATE TB_PARTY_GUEST
                     SET fg_attend = ?

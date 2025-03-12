@@ -300,7 +300,7 @@ function Child() {
                       )}
                   </div>
                   <span className='text-end text-success me-3 mb-3'style={{ cursor: 'pointer' }}
-                        onClick={() => navigate('/party', { state: { fgAdd: true } })}>
+                        onClick={() => navigate('/party', { state: { fgAdd: true, childId: childData.id_child, childName: childData.child_name } })}>
                       + add a new party
                   </span>
                 </div>

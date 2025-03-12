@@ -14,7 +14,7 @@ export const getShopping = (req, res) => {
                   WHERE TBS.id_party = ?
                     AND TBS.id_party = TBP.id_party
                     AND TBP.delete_at IS NULL
-               ORDER BY TBS.created_at desc;`
+               ORDER BY TBS.created_at ASC;`
   db.query(sql, [partyId], (err, result)=> {
       if(err) {
         console.error("Database Error:", err);
@@ -132,4 +132,45 @@ export const deleteShoppingByParty = (partyId) => {
       }
     });
   }); 
+};
+
+
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+export const addInitialItems = async (partyId) => {
+  const initialItems = [
+    'Birthday Cake',
+    'Birthday Candles',
+    'Candies, Chocolates, Cookies',
+    'Drinks (Juice, Soda, Water)',
+    'Plates, Cups, Napkins',
+    'Balloons'
+  ];
+
+  const sql = `INSERT INTO TB_SHOPPING 
+                  (id_item, id_party, shop_item, shop_fg_done) 
+               VALUES (?, ?, ?, ?);`;
+
+  try {
+    for (const item of initialItems) {
+      const values = [uuidv4(), partyId, item, false];
+
+      await delay(200);
+
+      await new Promise((resolve, reject) => {
+        db.query(sql, values, (err, result) => {
+          if (err) {
+            console.error("Error inserting shopping item:", err);
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        });
+      });
+    }
+
+    return;
+  } catch (err) {
+    throw new Error("Error inserting shopping items: " + err);
+  }
 };

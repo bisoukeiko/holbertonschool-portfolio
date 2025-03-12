@@ -106,11 +106,11 @@ function Invitation({ partyId }) {
 
   return (
 
-        <div className='d-flex flex-column justify-content-center mt-3'>
+        <div className='d-flex flex-column justify-content-center mt-2'>
         <div className='card  m-3'>
             <div className='card-header'>
                     <div className='d-flex justify-content-between m-2'>
-                        <h4 className='p-1'>Invitation</h4>
+                        <h4 className=''>Invitations</h4>
                     </div>
 
                 </div>

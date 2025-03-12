@@ -93,7 +93,7 @@ function Header() {
           </li>
           <li className="nav-item">
             <Link to="/createcard" className="nav-link text-dark fw-semibold">
-              Create Invitation
+              Create Invitations
             </Link>
           </li>
         </ul>

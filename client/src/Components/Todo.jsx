@@ -114,7 +114,7 @@ function Todo({ partyId }) {
     }
 
     return (
-        <div className='d-flex w-100 justify-content-center mt-3'>
+        <div className='d-flex w-100 mt-2'>
             <div className='card w-100 m-3'>
                 <div className='card-header p-3'>
                     <h4 className='p-1'>Todo List</h4>
@@ -126,7 +126,7 @@ function Todo({ partyId }) {
                             id='task'
                             type='text'
                             value={task}
-                            placeholder='Enter the task'
+                            placeholder=''
                             className='form-control text-break' 
                             onChange={e => {setTask(e.target.value);
                                 setValues({...values, task: e.target.value});
@@ -167,7 +167,7 @@ function Todo({ partyId }) {
                                             <input type='checkbox' checked={tbTodo.fg_done} readOnly onChange={(event) => handleTodoDone(event, tbTodo.id_task, tbTodo.fg_done)} />
                                         </label>
                                     </td>
-                                    <td className={`${tbTodo.fg_done ? 'text-decoration-line-through' : ''}`}>
+                                    <td className={`${tbTodo.fg_done ? 'text-decoration-line-through text-secondary' : ''}`}>
                                         <div className='text-break'>
                                             {tbTodo.task}
                                         </div>

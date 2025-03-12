@@ -112,7 +112,7 @@ function Shopping({ partyId }) {
     }
 
     return (
-        <div className='d-flex w-100 justify-content-center mt-3'>
+        <div className='d-flex w-100 mt-2'>
             <div className='card w-100 m-3'>
                 <div className='card-header p-3'>
                     <h4 className='p-1'>Shopping List</h4>
@@ -125,7 +125,7 @@ function Shopping({ partyId }) {
                             id='item'
                             type='text'
                             value={itemValue}
-                            placeholder='Enter the item'
+                            placeholder=''
                             className='form-control text-break' 
                             onChange={e => {setItemValue(e.target.value);
                                 setValues({...values, valueItem: e.target.value});
@@ -166,7 +166,7 @@ function Shopping({ partyId }) {
                                             <input type='checkbox' checked={tbShop.shop_fg_done} readOnly onChange={(event) => handleDone(event, tbShop.id_item, tbShop.shop_fg_done)} />
                                         </label>
                                     </td>
-                                    <td className={`${tbShop.shop_fg_done ? 'text-decoration-line-through' : ''}`}>
+                                    <td className={`${tbShop.shop_fg_done ? 'text-decoration-line-through text-secondary' : ''}`}>
                                         <div className='text-break'>
                                             {tbShop.shop_item}
                                         </div>

@@ -223,7 +223,7 @@ function Child() {
             { 
               childList?.map((childData) => (
                 <div key= {childData.id_child} className='card mb-3 mt-3' style={{ width: '18rem' }}>
-                  <div className='card-header'>
+                  <div className='card-header' onClick={() => navigate('/party', { state: { childId: childData.id_child, childName: childData.child_name } })}>
 
                     {/* error message */}
                     <div>

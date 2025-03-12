@@ -44,6 +44,14 @@ function Rsvp() {
     }, [partyId]);
 
 
+    const getOrdinalSuffix = (num) => {
+      if (num === 1) return 'st';
+      if (num === 2) return 'nd';
+      if (num === 3) return 'rd';
+      return 'th';
+    };
+
+
     const handleChange = (guestId, field, value) => {
       setGuestValue({ ...guestValue, [field]: value});
     };
@@ -84,7 +92,7 @@ function Rsvp() {
 
               <div className='card shadow-lg w-75 p-4 mb-5'>
                 <h3 className='text-center mb-3'>
-                  {partyInfo.childName}'s {partyInfo.childYears}th Birthday Party 🎉
+                  {partyInfo.childName}'s {partyInfo.childYears}{getOrdinalSuffix(partyInfo.childYears)} Birthday Party 🎉
                 </h3>
 
                 <div className='d-flex flex-column align-items-center gap-3'>

@@ -14,6 +14,7 @@ function Guest({ partyId, childId }) {
 
     const [guestList, setGuestList] = useState([]);
     const [allGuestList, setAllGuestList] = useState([]);
+    const [attendCount, setAttendCount] = useState(0);
     const [guestValue, setGuestValue] = useState({
         idGuest: '',
         guestName: '',
@@ -33,7 +34,7 @@ function Guest({ partyId, childId }) {
                   setGuestList(res.data);
                   if (res.data.length && res.data.length > 0) {        
                       setNoGuestsMsg('');
-                      setIsDisplay(false);
+                      // setIsDisplay(false);
                   } else {
                       setNoGuestsMsg('No guests registered for this party.');
                   }
@@ -41,14 +42,20 @@ function Guest({ partyId, childId }) {
               .catch(err => console.log(err));
 
 
-              axios.get(`http://localhost:5000/guest/selectAllGuest`, {params: { childId: childId }})
-              .then(res => {
-                  setAllGuestList(res.data);
-              })
-              .catch(err => console.log(err));
+          axios.get(`http://localhost:5000/guest/selectAllGuest`, {params: { childId: childId }})
+          .then(res => {
+              setAllGuestList(res.data);
+          })
+          .catch(err => console.log(err));
+
+          axios.get(`http://localhost:5000/guest/getAttendCount`, {params: { partyId: partyId }})
+          .then(res => {
+              setAttendCount(res.data[0].count);
+          })
+          .catch(err => console.log(err));
        }
       
-    }, [partyId]);
+    }, [partyId, guestList]);
 
 
 
@@ -111,11 +118,11 @@ function Guest({ partyId, childId }) {
     const getButtonClass = (fgAttend) => {
       switch (fgAttend) {
         case '1':
-          return 'text-success fw-semibold';  // 出席
+          return 'text-success fw-semibold';  // Attend
         case '2':
-          return 'text-danger';   // 欠席
+          return 'text-danger';   // Not Attend
         default:
-          return 'text-secondary'; // 未回答
+          return 'text-secondary'; // No answer
       }
     };
     
@@ -238,13 +245,16 @@ function Guest({ partyId, childId }) {
       {!isDisplay ? (
         <div className='row  g-0'>
             <div className='col'>
-                <div className='d-flex w-100 justify-content-center'>
-                    <div className='card w-100 me-3'>
+                <div className='d-flex w-100'>
+                    <div className='card w-100'>
                         <div className='card-header'>
-                          <div className='d-flex justify-content-between m-2'>
+                          <div className='d-flex justify-content-between align-items-center m-2'>
                             <h4>Guests</h4>
-                            {/* Add button */}
+                            <div className='fs-5'>
+                              {attendCount} guest{attendCount === 0 || attendCount === 1 ? '' : 's'} will attend.
+                            </div>
                             <div>
+                                {/* Add button */}
                                 {!isAdd && (
                                     <button onClick={handleClickAdd} className='btn btn-outline-success'>
                                         + Add a guest
@@ -339,10 +349,13 @@ function Guest({ partyId, childId }) {
             <div className='col-md-8'>
 
                 <div className='d-flex w-100 justify-content-center'>
-                    <div className='card w-100 me-3 mb-3'>
+                    <div className='card w-100 mb-2'>
                         <div className='card-header' onClick={() =>{setIsEdit(false); setIsAdd(false); setIsDisplay(false);}}>
                           <div className='d-flex justify-content-between m-2'>
                             <h4>Guests</h4>
+                            <div className='fs-5'>
+                              {attendCount} guest{attendCount === 0 || attendCount === 1 ? '' : 's'} will attend.
+                            </div>
                             {/* Add button */}
                             <div>
                               {(!isEdit && !isEditFg) && (
@@ -429,7 +442,7 @@ function Guest({ partyId, childId }) {
 
                         {/* card change atteng flag */}
                         {isEditFg? (
-                            <div className='card w-100 mb-2'>
+                            <div className='card w-100 ms-2'>
                               <div className='card-header'>
                                     <div className='d-flex flex-column justify-content-center'>
                                         <h4 className='text-center'>{guestValue.guestName}</h4>
@@ -491,7 +504,7 @@ function Guest({ partyId, childId }) {
                         ) : (
                           <div>
                         {/* guest card */}
-                        <div className='card w-100'>
+                        <div className='card w-100 ms-2'>
                             <div className='card-header'>
                               {/* error message */}
                               <div>

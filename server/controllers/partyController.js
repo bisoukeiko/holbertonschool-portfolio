@@ -1,10 +1,12 @@
 import db from '../db.js';
 import { v4 as uuidv4 } from 'uuid';
 import { getChildParty } from './childController.js';
-import { deleteTodoByParty } from './todoController.js';
-import { deleteShoppingByParty } from './shoppingController.js';
-import { deleteGuestByParty } from './guestController.js';
+// import { deleteTodoByParty } from './todoController.js';
+// import { deleteShoppingByParty } from './shoppingController.js';
+// import { deleteGuestByParty } from './guestController.js';
 import PartyValidator from '../validators/PartyValidator.js';
+import { addInitialTodos } from './todoController.js';
+import { addInitialItems } from './shoppingController.js';
 
 
 // select party by child id
@@ -66,11 +68,10 @@ export const selectParty = (req, res) => {
 
 
 // insert party
-export const insertParty = (req, res) => {
+export const insertParty =  async (req, res) => {
   const { idChild, partyDate, partyTimeFrom, partyTimeTo, partyPlace, partyPlace2, partyPlace3, partyContact1, partyContact2 } = req.body;
   const validator = new PartyValidator(partyDate, partyTimeFrom, partyTimeTo, partyPlace, partyPlace2, partyPlace3, partyContact1, partyContact2);
   if (!validator.validate()) {
-    // console.log(validator.getErrors());
     return res.status(400).json({errors: validator.getErrors()});
   }
 
@@ -87,8 +88,10 @@ export const insertParty = (req, res) => {
                         party_contact2)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
 
+  const insertedUuid = uuidv4();
+  console.log('insert party id: ',insertedUuid);
   const values = [
-          uuidv4(),
+          insertedUuid,
           idChild,
           partyDate,
           partyTimeFrom,
@@ -100,18 +103,25 @@ export const insertParty = (req, res) => {
           partyContact2
   ];
 
-  db.query(sql, values, (err, result) => {
-    if(err) {
-      console.error('Error insertion child:', err);
-      return res.status(500).json({ error: 'Error insert party' });
-    } else {
-      const insertedUuid = values[0]; 
+  try {
+    await new Promise((resolve, reject) => {
+      db.query(sql, values, (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
+    });
 
-      req.query.userId = req.body.userId;
-      req.query.insertedUuid = insertedUuid;
-      getChildParty(req, res);
-    }
-  });
+    await addInitialTodos(insertedUuid);
+    await addInitialItems(insertedUuid);
+
+    req.query.insertedUuid = insertedUuid;
+    req.query.userId = req.body.userId;
+    return getChildParty(req, res);
+    
+  } catch (err) {
+    console.error('Error inserting party:', err);
+    return res.status(500).json({ error: 'Error inserting party', details: err });
+  }
 };
 
 
@@ -221,6 +231,7 @@ export const deleteParty = (req, res) => {
         return res.json({Message: 'Error delete party', Error: err});
       } else {
         req.query.userId = userId;
+        req.query.insertedUuid = partyId;
         getChildParty(req, res);
       }
     }); 

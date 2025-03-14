@@ -63,6 +63,13 @@ function Rsvp() {
 
       const updatedValues = { ...guestValue };
 
+      if (!updatedValues.parentPhone) {
+        setErrValidation([
+          "Parent's phone number is required."
+        ])
+        return;
+      }
+
       // console.log('updatedValues', updatedValues);
       axios.put(`http://localhost:5000/guest/updateRsvp/${updatedValues.idGuest}`, {...updatedValues, 'partyId': partyId})
       .then(res => {
@@ -177,7 +184,7 @@ function Rsvp() {
                     <div className='' style={{ width: '40%' }}>
 
                         <label htmlFor='guestAllergy' className='ms-2'>Allergy</label>
-                        <input id='guestAllergy' type='text' placeholder='ex: gulten' className='form-control mb-5' value={guestValue.guestAllergy}
+                        <input id='guestAllergy' type='text' placeholder='' className='form-control mb-5' value={guestValue.guestAllergy}
                             onChange={event => handleChange(guestValue.idGuest, 'guestAllergy', event.target.value)}
                         />
 

@@ -221,7 +221,7 @@ function Party() {
         if (!targetParty) return;
 
         // 既存の値を保持しながら、変更された値だけを更新
-        setPartyValue({ ...targetParty });
+        setPartyValue({ ...targetParty, isEdit: true });
         setPartyList(partyList.map(party =>
             party.idParty === partyId ? {...party, isEdit: true} : party
         ));
@@ -245,24 +245,28 @@ function Party() {
     };
 
     const handleCancel = (partyId) => {
-        setPartyValue({
-            idParty: '',
-            idChild: '',
-            partyDate: '',
-            partyTimeFrom: '',
-            partyTimeTo: '',
-            partyPlace: '',
-            partyPlace2: '',
-            partyPlace3: '',
-            partyContact1: '',
-            partyContact2: '',
-            childName: ''
-            });
 
-        setIsAdd(false);
+        if(isAdd) {
+            setPartyValue({
+                idParty: '',
+                idChild: '',
+                partyDate: '',
+                partyTimeFrom: '',
+                partyTimeTo: '',
+                partyPlace: '',
+                partyPlace2: '',
+                partyPlace3: '',
+                partyContact1: '',
+                partyContact2: '',
+                childName: ''
+                });
+        }
+
         setErrValidation([]);
+        setIsAdd(false);
 
         if (partyId) {
+            setPartyValue({ ...partyValue, isEdit: false });
             setPartyList(partyList.map(party =>
                 party.idParty === partyId ? {...party, isEdit: false} : party
             ));

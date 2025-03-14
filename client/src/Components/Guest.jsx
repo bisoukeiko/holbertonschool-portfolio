@@ -23,6 +23,7 @@ function Guest({ partyId, childId }) {
         otherInfo: '',
         parentPhone: '',
         parentEmail: '',
+        idParty: '',
         fgAttend: ''
     });
 
@@ -40,13 +41,18 @@ function Guest({ partyId, childId }) {
                   }
               })
               .catch(err => console.log(err));
+       }
+      
+    }, [partyId]);
 
 
+    useEffect(() => {
+      if (guestList) {
           axios.get(`http://localhost:5000/guest/selectAllGuest`, {params: { childId: childId }})
-          .then(res => {
-              setAllGuestList(res.data);
-          })
-          .catch(err => console.log(err));
+              .then(res => {
+                  setAllGuestList(res.data);
+              })
+              .catch(err => console.log(err));
 
           axios.get(`http://localhost:5000/guest/getAttendCount`, {params: { partyId: partyId }})
           .then(res => {
@@ -55,8 +61,7 @@ function Guest({ partyId, childId }) {
           .catch(err => console.log(err));
        }
       
-    }, [partyId, guestList]);
-
+    }, [guestList]);
 
 
     const handleGuestDetail = (event, guestData) => {
@@ -585,7 +590,7 @@ function Guest({ partyId, childId }) {
                                   <div>
                                       <label htmlFor='guestAllergy'>Allergy:</label>
                                       {(isEdit || isAdd) ? (
-                                        <input id='guestAllergy' type='text' placeholder='ex: gulten' className='form-control' value={guestValue.guestAllergy}
+                                        <input id='guestAllergy' type='text' placeholder='' className='form-control' value={guestValue.guestAllergy}
                                             onChange={event => handleChange(guestValue.idGuest, 'guestAllergy', event.target.value)}
                                         />
                                       ) : (

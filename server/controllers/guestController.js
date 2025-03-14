@@ -12,6 +12,7 @@ export const getGuestList = (req, res) => {
                         TBG.other_info AS otherInfo,
                         TBG.parent_phone As parentPhone,
                         TBG.parent_email AS parentEmail,
+                        TBGP.id_party AS idParty,
                         TBGP.fg_attend AS fgAttend
                    FROM TB_GUEST AS TBG,
                         TB_PARTY AS TBP,
@@ -153,7 +154,7 @@ export const insertPartyGuest = (partyId, guestId) => {
 // update guest
 export const updateGuest = (req, res) => {
 
-    const { guestName, guestRelation, guestAllergy, otherInfo, parentPhone, parentEmail} = req.body;
+    const { guestName, guestRelation, guestAllergy, otherInfo, parentPhone, parentEmail, idParty} = req.body;
 
     const validator = new GuestValidator(guestName, guestRelation, guestAllergy, otherInfo, parentPhone, parentEmail);
     if (!validator.validate()) {
@@ -176,7 +177,8 @@ export const updateGuest = (req, res) => {
         console.error("Database Error:", err);
         return res.status(500).json({Message: 'Error update todo', Error: err});
       } else {
-        req.query.partyId = partyId;
+        req.query.partyId = idParty;
+        console.log('idParty: ', idParty)
         getGuestList(req, res);
       }
     });

@@ -25,7 +25,7 @@ class UserValidator {
         const phoneRegex = /^\d{10}$/;
 
         // remove -, space
-        const phoneReplace = this.userPhone?.replace(/[-\s]/g, '');
+        const phoneReplace = this.userPhone?.replace(/[-\s.]/g, '');
 
         if (this.userPhone && !phoneRegex.test(phoneReplace)) {
             this.errors.push('Please enter a valid telephone numbre.');

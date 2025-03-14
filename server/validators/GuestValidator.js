@@ -38,11 +38,9 @@ class GuestValidator {
     validateGuestPhone() {
         const phoneRegex = /^\d{10}$/;
         // remove -, space
-        const phoneReplace = this.parentPhone?.replace(/[-\s]/g, '');
+        const phoneReplace = this.parentPhone?.replace(/[-\s.]/g, '');
 
-        if (!this.parentPhone || this.parentPhone.trim() === '') {
-            this.errors.push("Parent's phone number is required.")
-        } else if (!phoneRegex.test(phoneReplace)) {
+        if (this.parentPhone && !phoneRegex.test(phoneReplace)) {
             this.errors.push('Please enter a valid telephone number.');
         }
     }

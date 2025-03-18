@@ -79,6 +79,7 @@ function CreateCard() {
             .catch(err => console.log(err));
 
             if (selectedParty) {
+                console.log('selectedParty id: ', selectedParty);
                 axios.get(`http://localhost:5000/party/select`, {params: { partyId: selectedParty }})
                 .then(res => {
                     // console.log('partyselect1: ', res.data[0]);

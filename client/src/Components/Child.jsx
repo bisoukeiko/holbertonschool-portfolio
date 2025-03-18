@@ -223,7 +223,7 @@ function Child() {
             { 
               childList?.map((childData) => (
                 <div key= {childData.id_child} className='card mb-3 mt-3' style={{ width: '18rem' }}>
-                  <div className='card-header' onClick={() => navigate('/party', { state: { childId: childData.id_child, childName: childData.child_name } })}>
+                  <div className='card-header'>
 
                     {/* error message */}
                     <div>
@@ -242,7 +242,7 @@ function Child() {
                               onChange={event => handleChange(childData.id_child, 'child_name', event.target.value)}  required />                      
                       </div>
                       ) : ( 
-                        <div className='fs-5 mb-1'>{childData.child_name}</div>
+                        <div className='fs-5 mb-1' onClick={() => navigate('/party', { state: { childId: childData.id_child, childName: childData.child_name } })}>{childData.child_name}</div>
                     )}
 
 

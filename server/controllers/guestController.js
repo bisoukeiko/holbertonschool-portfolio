@@ -178,7 +178,6 @@ export const updateGuest = (req, res) => {
         return res.status(500).json({Message: 'Error update todo', Error: err});
       } else {
         req.query.partyId = idParty;
-        console.log('idParty: ', idParty)
         getGuestList(req, res);
       }
     });

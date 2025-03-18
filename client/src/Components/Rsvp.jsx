@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import {Dropdown } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
 function Rsvp() {
@@ -114,7 +114,7 @@ function Rsvp() {
         <div className='container py-4'>
         <div className='d-flex flex-column justify-content-center align-items-center'>
 
-          <h2 className='text-center mt-5 mb-5'>🎂 RSVP for the Borthday Party🎈</h2>
+          <h2 className='text-center mt-5 mb-5'>🎂 RSVP for the Birthday Party🎈</h2>
           <div className='text-center mb-5'>
               Please let us know if your child can make it to the birthday party!
           </div>
@@ -129,7 +129,7 @@ function Rsvp() {
                   <div className='d-flex flex-wrap justify-content-center gap-5'>
                     <div className='text-center'>
                       <h5 className='text-primary'>📅 Date</h5>
-                      <p>{partyInfo.partyDate}</p>
+                      <p>{partyInfo.partyDate2}</p>
                     </div>
                     <div className='text-center'>
                       <h5 className='text-primary'>⏰ Time</h5>
@@ -137,7 +137,9 @@ function Rsvp() {
                     </div>
                     <div className='text-center'>
                       <h5 className='text-primary'>📍 Location</h5>
-                      <p>{partyInfo.partyPlace}</p>
+                      <p className='mb-0'>{partyInfo.partyPlace}</p>
+                      <p className='mb-0'>{partyInfo.partyPlace2 || ''}</p>
+                      <p>{partyInfo.partyPlace3 || ''}</p>
                     </div>
                   </div>
 

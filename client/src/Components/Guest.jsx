@@ -160,10 +160,6 @@ function Guest({ partyId, childId }) {
           setErrValidation(['Guest name is required.']);
           return;
         }
-        // if (!guestValue.parentPhone) {
-        //   setErrValidation(['Parents phone numbre is required.']);
-        //   return;
-        // }
 
         // console.log('insert guestValue: ', guestValue);
         axios.post('http://localhost:5000/guest/insert', {...guestValue, 'partyId': partyId })

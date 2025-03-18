@@ -93,14 +93,14 @@ class PartyValidator {
         const phoneRegex = /^\d{10}$/;
 
         if (this.partyContact1) {
-            const phoneReplace = this.partyContact1?.replace(/[-\s]/g, '');   // remove -, space
+            const phoneReplace = this.partyContact1?.replace(/[-\s.]/g, '');   // remove -, space
 
             if (!phoneRegex.test(phoneReplace)) {
                 this.errors.push('Please enter a valid telephone numbre.');
             }
         }
         if (this.partyContact2) {
-            const phoneReplace = this.partyContact2?.replace(/[-\s]/g, '');   // remove -, space
+            const phoneReplace = this.partyContact2?.replace(/[-\s.]/g, '');   // remove -, space
 
             if (!phoneRegex.test(phoneReplace)) {
                 this.errors.push('Please enter a valid telephone numbre.');

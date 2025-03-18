@@ -160,10 +160,6 @@ function Guest({ partyId, childId }) {
           setErrValidation(['Guest name is required.']);
           return;
         }
-        if (!guestValue.parentPhone) {
-          setErrValidation(['Parents phone numbre is required.']);
-          return;
-        }
 
         // console.log('insert guestValue: ', guestValue);
         axios.post('http://localhost:5000/guest/insert', {...guestValue, 'partyId': partyId })
@@ -526,8 +522,8 @@ function Guest({ partyId, childId }) {
                                   <div className='d-flex justify-content-center align-items-end'>
                                       <Dropdown>
                                           <Dropdown.Toggle variant='light' id='dropdown-basic'className='fs-6 mb-2 border' style={{ width: '200px' }}>
-                                          {guestValue.guestName && guestValue.guestRelation 
-                                                ? `${guestValue.guestName} (${guestValue.guestRelation})` 
+                                          {guestValue.guestName
+                                                ? `${guestValue.guestName} (${guestValue.guestRelation || ''})` 
                                                 : 'Past parties guests'}
                                           </Dropdown.Toggle>
             

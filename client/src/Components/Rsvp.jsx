@@ -22,6 +22,7 @@ function Rsvp() {
         otherInfo: '',
         parentPhone: '',
         parentEmail: '',
+        idParty: '',
         fgAttend: ''
     });
 
@@ -29,7 +30,7 @@ function Rsvp() {
       if (partyId) {
           axios.get(`http://localhost:5000/guest/select`, {params: { partyId: partyId }})
               .then(res => {
-                  // console.log(res.data);
+                  console.log(res.data);
                   setGuestList(res.data);
               })
               .catch(err => console.log(err));
@@ -52,7 +53,21 @@ function Rsvp() {
     };
 
 
-    const handleChange = (guestId, field, value) => {
+    const handleSetGuest = (guestData) => {
+      setGuestValue({
+        idGuest: guestData.idGuest || '',
+        guestName: guestData.guestName || '',
+        guestRelation: guestData.guestRelation || '',
+        guestAllergy: guestData.guestAllergy || '',
+        otherInfo: guestData.otherInfo || '',
+        parentPhone: guestData.parentPhone || '',
+        parentEmail: guestData.parentEmail || '',
+        idParty: guestData.idParty || '',
+        fgAttend: guestData.fgAttend ?? ''
+      });
+    }
+
+    const handleChange = (field, value) => {
       setGuestValue({ ...guestValue, [field]: value});
     };
 
@@ -63,10 +78,18 @@ function Rsvp() {
 
       const updatedValues = { ...guestValue };
 
+      let errors = [];
+
+      if (!updatedValues.fgAttend) {
+        errors.push("Attendance confirmation is required. Please select Yes or No.");
+      }
+
       if (!updatedValues.parentPhone) {
-        setErrValidation([
-          "Parent's phone number is required."
-        ])
+        errors.push("Parent's phone number is required.");
+      }
+
+      if (errors.length > 0) {
+        setErrValidation(errors.join('\n'));
         return;
       }
 
@@ -131,16 +154,17 @@ function Rsvp() {
                     {/* dropdown child name */}
                     <Dropdown>
                         <Dropdown.Toggle variant='light' id='dropdown-basic'className='fs-6 mb-4 border' style={{ width: '200px' }}>
-                        {guestValue.guestName && guestValue.guestRelation 
-                              ? `${guestValue.guestName} (${guestValue.guestRelation})` 
+                        {guestValue.guestName
+                              ? `${guestValue.guestName} (${guestValue.guestRelation || ''})` 
                               : 'Select guest name'}
                         </Dropdown.Toggle>
               
                         <Dropdown.Menu  style={{ width: '200px' }}>
                             {guestList.map((guest) => (
                                 <Dropdown.Item 
-                                    key={guest.idguest} 
-                                    onClick={() => setGuestValue(guest)}>
+                                    key={guest.idGuest} 
+                                    onClick={() => {handleSetGuest(guest)}}>
+                                    {/* onClick={() => {setGuestValue(guest)}}> */}
                                     {`${guest.guestName} (${guest.guestRelation || ''})`}
                                 </Dropdown.Item>
                             ))}
@@ -152,14 +176,14 @@ function Rsvp() {
                     </div>
 
                     <div className='d-flex mb-5'>
-                        <div className='form-check me-4'>
+                        <div className='form-check me-5'>
                           <input
                             className='form-check-input'
                             type='radio'
                             name={`fgAttend_${guestValue.idGuest}`}
                             id='fgAttend1'
                             checked={guestValue.fgAttend === '1'}
-                            onChange={() => handleChange(guestValue.idGuest, 'fgAttend', '1')}
+                            onChange={() => handleChange('fgAttend', '1')}
                           />
                           <label className='form-check-label' htmlFor='fgAttend1'>
                             Yes
@@ -173,7 +197,7 @@ function Rsvp() {
                             name={`fgAttend_${guestValue.idGuest}`}
                             id='fgAttend2'
                             checked={guestValue.fgAttend === '2'}
-                            onChange={() => handleChange(guestValue.idGuest, 'fgAttend', '2')}
+                            onChange={() => handleChange('fgAttend', '2')}
                           />
                           <label className='form-check-label' htmlFor='fgAttend2'>
                             No
@@ -185,22 +209,22 @@ function Rsvp() {
 
                         <label htmlFor='guestAllergy' className='ms-2'>Allergy</label>
                         <input id='guestAllergy' type='text' placeholder='' className='form-control mb-5' value={guestValue.guestAllergy}
-                            onChange={event => handleChange(guestValue.idGuest, 'guestAllergy', event.target.value)}
+                            onChange={event => handleChange('guestAllergy', event.target.value)}
                         />
 
                         <label htmlFor='parentPhone' className='ms-2'>Parents phone number *</label>
                         <input id='parentPhone' type='text' placeholder='' className='form-control mb-5' value={guestValue.parentPhone}
-                            onChange={event => handleChange(guestValue.idGuest, 'parentPhone', event.target.value)}
+                            onChange={event => handleChange('parentPhone', event.target.value)}
                         />
 
                         <label htmlFor='parentEmail' className='ms-2'>Parents E-mail</label>
                         <input id='parentEmail' type='text' placeholder='' className='form-control mb-5' value={guestValue.parentEmail}
-                            onChange={event => handleChange(guestValue.idGuest, 'parentEmail', event.target.value)}
+                            onChange={event => handleChange('parentEmail', event.target.value)}
                         />
 
                         <label htmlFor='otherInfo' className='ms-2'>Other Information</label>
                         <textarea id='otherInfo' type='text' placeholder='' className='form-control mb-5' value={guestValue.otherInfo}
-                            onChange={event => handleChange(guestValue.idGuest, 'otherInfo', event.target.value)}>
+                            onChange={event => handleChange('otherInfo', event.target.value)}>
                         </textarea>
 
                     </div>

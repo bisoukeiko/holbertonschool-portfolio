@@ -2,11 +2,11 @@ import React from 'react';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { UserProvider } from './Components/UserContext';
-import Home from './Components/Home';
+import Home from './Pages/Home';
 import Header from './Components/Header';
-import Party from './Components/Party';
-import Rsvp from './Components/Rsvp';
-import CreateCard from './Components/CreateCard';
+import Party from './Pages/Party';
+import Rsvp from './Pages/Rsvp';
+import CreateCard from './Pages/CreateCard';
 
 
 function App() {

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { jsPDF } from "jspdf";
 import { useNavigate } from 'react-router-dom';
-import { useUser } from './UserContext';
+import { useUser } from '../Contexts/UserContext';
 
 
 function Invitation({ partyId }) {

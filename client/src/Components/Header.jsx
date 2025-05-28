@@ -4,7 +4,7 @@ import { googleLogout, GoogleOAuthProvider, useGoogleLogin  } from '@react-oauth
 // import { jwtDecode } from 'jwt-decode';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import {useUser} from './UserContext'
+import {useUser} from '../Contexts/UserContext'
 
 
 function Header() {
@@ -103,12 +103,12 @@ function Header() {
             <GoogleOAuthProvider clientId={''}>
                 {!userId ? (
                   <button className='btn btn-light d-flex align-items-center shadow-sm border rounded' onClick={() => googlelogin()}>
-                      <img src="https://img.icons8.com/color/48/000000/google-logo.png" alt="Google Logo" class="me-2" width="20" height="20"/>
+                      <img src="https://img.icons8.com/color/48/000000/google-logo.png" alt="Google Logo" className="me-2" width="20" height="20"/>
                       <span className="">Sign in with Google</span>
                   </button>
                 ) : (
                   <button className='btn btn-light d-flex align-items-center shadow-sm border rounded' onClick={handleLogout}>
-                      <img src="https://img.icons8.com/color/48/000000/google-logo.png" alt="Google Logo" class="me-2" width="20" height="20"/>
+                      <img src="https://img.icons8.com/color/48/000000/google-logo.png" alt="Google Logo" className="me-2" width="20" height="20"/>
                       <span className=''>Logout</span>
                   </button>
                 )}

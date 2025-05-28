@@ -6,7 +6,7 @@ import { jsPDF } from "jspdf";
 import {Dropdown, Form } from 'react-bootstrap';
 
 import { useLocation } from 'react-router-dom';
-import { useUser } from '../Components/UserContext';
+import { useUser } from '../Contexts/UserContext';
 
 import card_1 from '../assets/template/card_1.png';
 import card_2 from '../assets/template/card_2.png';

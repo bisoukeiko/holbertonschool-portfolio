@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useUser } from '../Components/UserContext';
+import { useUser } from '../Contexts/UserContext';
 import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import axios from 'axios';

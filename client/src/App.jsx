@@ -1,7 +1,7 @@
 import React from 'react';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { UserProvider } from './Components/UserContext';
+import { UserProvider } from './Contexts/UserContext';
 import Home from './Pages/Home';
 import Header from './Components/Header';
 import Party from './Pages/Party';

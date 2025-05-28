@@ -1,4 +1,4 @@
-import { useUser } from '../Components/UserContext';
+import { useUser } from '../Contexts/UserContext';
 import Child from '../Components/Child';
 import home_3 from '../assets/home/home_3.jpg';
 

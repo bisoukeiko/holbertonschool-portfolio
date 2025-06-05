@@ -46,7 +46,7 @@ function Todo({ partyId }) {
                 if (err.response && err.response.data.errors) {
                   setErrValidation(err.response.data.errors.join('\n'));
                 } else {
-                  console.error("Error updating user:", err);
+                  console.error("Error insert todo:", err);
                 }
             })
         }
@@ -80,7 +80,7 @@ function Todo({ partyId }) {
             if (err.response && err.response.data.errors) {
               setErrValidation(err.response.data.errors.join('\n'));
             } else {
-              console.error("Error updating user:", err);
+              console.error("Error updating todo:", err);
             }
         })
 

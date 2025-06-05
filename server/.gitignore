@@ -1,0 +1,42 @@
+/node/bin
+
+# Node modules directory
+node_modules/
+
+# バンドルやビルドによる出力ディレクトリ（一般的な名前）
+dist/
+build/
+
+# ログファイル
+*.log
+
+# OSによるシステムファイル
+.DS_Store
+Thumbs.db
+
+# IDEやエディタによる設定ファイルや一時ファイル
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# 一時ファイルやバックアップファイル
+*.swp
+*.bak
+*.tmp
+
+# 環境変数やシークレット情報 (認証情報などを含むことが多い)
+.env
+
+# Jestや他のテストフレームワークの出力
+coverage/
+
+# Babelのキャッシュ（ビルド時のパフォーマンス向上のために生成される）
+.babel_cache/
+
+# npmデバッグログ
+npm-debug.log*
+
+# Yarn関連の一時ファイル
+.yarn/
+.pnp.*

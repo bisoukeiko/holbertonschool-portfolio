@@ -1,6 +1,5 @@
-import { useUser } from './UserContext';
-import User from './User';
-import Child from './Child';
+import { useUser } from '../Contexts/UserContext';
+import Child from '../Components/Child';
 import home_3 from '../assets/home/home_3.jpg';
 
 
@@ -12,7 +11,9 @@ function Home() {
 
     <div className='row text-center g-0'>
       <div className='col'>
-        <img src={home_3} className="img-fluid w-100" alt="" />
+        {!userId && (
+          <img src={home_3} className="img-fluid w-100" alt="" />
+        )}
       </div>
     </div>
     <div className='row g-0'>

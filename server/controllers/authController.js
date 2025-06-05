@@ -1,9 +1,11 @@
 import axios from 'axios';
 import qs from 'qs';
+import dotenv from 'dotenv';
 
-
+dotenv.config();
 
 export const getGoogleToken = async(req, res) => {
+  
     const { code } = req.body;
 
     if (code === undefined) {
@@ -16,9 +18,9 @@ export const getGoogleToken = async(req, res) => {
     // Google OAuthの認証情報を設定
     const params = {
       code: code,
-      client_id: '',
-      client_secret: '',
-      redirect_uri: 'http://127.0.0.1:3000',
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
       grant_type: 'authorization_code'
     }
   

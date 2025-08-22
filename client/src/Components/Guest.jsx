@@ -161,7 +161,7 @@ function Guest({ partyId, childId }) {
           return;
         }
 
-        // console.log('insert guestValue: ', guestValue);
+        //console.log('partyId ', partyId);
         axios.post('http://localhost:5000/guest/insert', {...guestValue, 'partyId': partyId })
           .then(res => {
               setGuestList(res.data);

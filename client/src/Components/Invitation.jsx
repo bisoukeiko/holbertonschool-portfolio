@@ -127,7 +127,7 @@ function Invitation({ partyId }) {
                                             <button className='btn btn-outline-secondary' onClick={handleDownload}>
                                                 Download
                                             </button>
-                                            <button type='button' class='btn btn-outline-primary' onClick={handleCreateCard}>
+                                            <button type='button' className='btn btn-outline-primary' onClick={handleCreateCard}>
                                                 Modify Invitation Card
                                             </button>
                                         </div>
@@ -138,7 +138,7 @@ function Invitation({ partyId }) {
                                 )}
                             </div>
                         ) : (
-                            <button type='button' class='btn btn-outline-success m-4' onClick={handleCreateCard}>
+                            <button type='button' className='btn btn-outline-success m-4' onClick={handleCreateCard}>
                                 Create Invitation Card
                             </button>
                         )}

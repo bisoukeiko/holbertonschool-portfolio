@@ -109,7 +109,7 @@ export const deleteTodo = (req, res) => {
     db.query(sql, [id], (err, result) => {
       if(err) {
         console.error("Database Error:", err);
-        return res.json({Message: 'Error delete todo', Error: err});
+        return res.status(500).json({Message: 'Error delete todo', Error: err});
       } else {
         req.query.partyId = req.body.id_party;
         getTodos(req, res);

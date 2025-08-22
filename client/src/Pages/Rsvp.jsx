@@ -27,6 +27,7 @@ function Rsvp() {
     });
 
     useEffect(() => {
+      console.log('partyId: ', partyId);
       if (partyId) {
           axios.get(`http://localhost:5000/guest/select`, {params: { partyId: partyId }})
               .then(res => {
@@ -240,7 +241,7 @@ function Rsvp() {
                         )}
                     </div>
 
-                    <button class='btn btn-primary' type='submit' onClick={handleSend}>
+                    <button className='btn btn-primary' type='submit' onClick={handleSend}>
                         Send
                     </button>
 
